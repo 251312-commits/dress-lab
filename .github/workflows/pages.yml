@@ -23,6 +23,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Verify JavaScript and legacy assets
+        run: |
+          node tools/check-syntax.mjs
+          node --check app/wardrobe-extension.js
+          node --check tools/build-wardrobe.mjs
       - name: Build garment index from uploaded folders
         run: node tools/build-wardrobe.mjs
       - name: Configure Pages

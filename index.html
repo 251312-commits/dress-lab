@@ -1,0 +1,1594 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#f1f4fa"><title>DRESS LAB — 레이어 옷입히기</title><style>
+/* Layout redesign: three-column dress-up studio. */
+:root{--bg:#f0f3fa;--card:#fff;--text:#222d3e;--sub:#7a8597;--line:#e7eaf0;--blue:#438fee;--blueDark:#327edf;--radius:20px}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR",Pretendard,system-ui,sans-serif;color:var(--text);background:radial-gradient(circle at 50% 28%,#ffffff 0,#f8f9fd 43%,#e6ebf6 100%)}
+body{height:100dvh;overflow:hidden}
+button,input,select{font:inherit}button{cursor:pointer;touch-action:manipulation}button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.app-shell{height:100dvh;max-width:1520px;margin:0 auto;padding:12px 18px 15px;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:12px;min-height:0}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 4px;min-height:38px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.7px;font-size:17px}.brand-icon{display:grid;place-items:center;background:linear-gradient(145deg,#6ab1ff,#337fea);color:white;width:32px;height:32px;border-radius:11px;font-size:21px;box-shadow:0 5px 12px #458be734}
+.top-right{display:flex;align-items:center;gap:9px;color:#8c97a9;font-size:12px}.status-pill{display:inline-flex;align-items:center;gap:7px;border:1px solid #dfebff;border-radius:100px;background:#fff;color:#4d80c0;padding:6px 11px}.status-pill::before{content:"";width:6px;height:6px;border-radius:50%;background:#51b99d}
+.workspace{display:grid;grid-template-columns:minmax(240px,280px) minmax(260px,1fr) minmax(265px,355px);gap:14px;min-height:0;align-items:stretch}
+.sidebar{display:flex;flex-direction:column;min-height:0;min-width:0;gap:10px}
+.segmented{display:grid;align-items:center;gap:4px;background:#fff;border:1px solid #ebeff6;padding:5px;border-radius:19px;box-shadow:0 4px 16px #314c7410;flex:none}
+.left-tabs{grid-template-columns:repeat(4,minmax(0,1fr))}
+.category-tabs{grid-template-columns:repeat(4,minmax(0,1fr))}
+.segmented button{border:0;border-radius:14px;min-width:0;min-height:42px;background:transparent;color:#778295;font-weight:750;font-size:13px;padding:5px 4px;white-space:nowrap}
+.segmented button.active,.segmented button[aria-selected="true"]{background:linear-gradient(145deg,#55a5fa,#347de2);color:white;box-shadow:0 4px 9px #418cf53a}
+.scroll-card{background:#fff;border:1px solid #eef0f5;border-radius:22px;box-shadow:0 10px 30px #5264820b;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#d5deed transparent;padding:15px 15px 18px;flex:1}
+.tab-panel[hidden]{display:none!important}
+.panel-heading{display:flex;align-items:center;gap:8px;margin:0 0 13px;min-width:0}.panel-heading h2{font-size:15px;letter-spacing:-.4px;line-height:1.2;margin:0;flex:1}.heading-symbol{color:#6390cc;font-size:21px;line-height:1}.tiny-ghost{border:1px solid #e8edf5;background:#fff;color:#7486a4;border-radius:50%;width:30px;height:30px;font-size:20px;padding:0;display:grid;place-items:center;box-shadow:0 2px 8px #00000009}
+.group{border-top:1px solid #eff1f5;margin-top:16px;padding-top:13px}.group h3{font-size:11px;font-weight:750;color:#8793a6;margin:0 0 12px;letter-spacing:-.1px}
+.control{margin:0 0 16px}.readout{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:8px}.readout label{font-size:12px;font-weight:650;color:#374254}.readout output{color:#72819a;font-size:11px;font-variant-numeric:tabular-nums}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;outline:0;border-radius:100px;cursor:pointer;background:linear-gradient(90deg,#458fe9 var(--fill,50%),#e3e7ed var(--fill,50%));margin:3px 0 8px;touch-action:pan-y}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;border:2px solid white;box-shadow:0 1px 4px #2d71d43d;width:17px;height:17px;border-radius:50%;background:#468eea}
+input[type=range]::-moz-range-thumb{border:2px solid white;box-shadow:0 1px 4px #2d71d43d;width:17px;height:17px;border-radius:50%;background:#468eea}
+.skin-presets{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin:9px 0 13px}.skin-sample{border:2px solid white;outline:1px solid #e5e2e1;aspect-ratio:1;border-radius:50%;background:var(--tone);padding:0;box-shadow:0 3px 7px #00000014;min-width:0}.skin-sample.chosen{outline:2px solid var(--blue);outline-offset:2px}
+.palette-card{margin-top:10px}.palette-heading{display:flex;align-items:center;justify-content:space-between;gap:7px;margin-bottom:9px}.palette-heading label{font-size:12px;font-weight:700}.tone-badge{display:block;width:25px;height:25px;border:3px solid white;border-radius:50%;box-shadow:0 0 0 1px #e6d8d0;background:#fce3cf}
+.palette-holder{position:relative;height:154px;overflow:hidden;border-radius:12px;cursor:crosshair;touch-action:none}.palette-holder canvas{width:100%;height:100%;display:block}.palette-cursor{pointer-events:none;position:absolute;width:15px;height:15px;transform:translate(-50%,-50%);border:2px solid white;box-shadow:0 0 0 1px #303b4d,0 2px 5px #0003;border-radius:50%;top:4%;left:17%}
+.color-col,.color-row{width:100%}.color-row{margin-top:10px}.color-row label{font-size:11px;color:#68768a;display:block;margin-bottom:7px}#hue,.quick-slider.hue{background:linear-gradient(90deg,#f55,#ffe55c,#65d382,#6ec4ed,#6566fb,#f77dcc,#f55)!important}
+.hexrow{display:flex;gap:5px;align-items:center;margin:9px 0}.hexrow input[type=text]{min-width:0;width:100%;padding:7px 6px;border:1px solid #dfe4ed;border-radius:9px;font:600 11px monospace}.hexrow input[type=color]{height:30px;width:33px;flex:none;border:1px solid #e2e6ef;padding:2px;border-radius:8px;background:#fff}.hexrow button{white-space:nowrap;background:#f7f9ff;color:#566781;padding:7px 5px;border:1px solid #e1e6ef;border-radius:9px;font-size:10px}.state-note{font-size:10px;color:#78869c;margin-top:4px}
+.center-stage{min-width:0;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:space-between;position:relative;z-index:0;padding:6px 0 8px}
+.stage-caption{display:flex;flex-direction:column;align-items:center;gap:4px;flex:none;text-align:center;z-index:1}.stage-caption .micro{letter-spacing:2px;font-size:10px;color:#95a1b5;font-weight:750}.stage-caption strong{font-size:15px;letter-spacing:-.4px;color:#495d79}
+.canvas-bed{touch-action:manipulation;cursor:crosshair;position:relative;display:flex;align-items:center;justify-content:center;flex:1;min-height:0;width:100%;overflow:visible}.canvas-bed:after{content:"";z-index:-1;position:absolute;bottom:6%;left:50%;transform:translateX(-50%);background:#dbe3f1;width:60%;height:20px;border-radius:50%;filter:blur(10px);opacity:.6}
+.art{height:min(100%,780px);width:auto;max-width:100%;object-fit:contain;display:block;flex:none}
+.stage-controls{display:grid;grid-template-columns:1fr 1fr;gap:11px;width:100%;max-width:245px;flex:none;z-index:1}.stage-controls button{border:1px solid #e5ebf4;border-radius:16px;min-height:47px;color:#5a7192;background:#fff;font-size:12px;font-weight:750;box-shadow:0 6px 12px #4b658014}.stage-controls button span{display:block;font-size:19px;line-height:1.15;margin-bottom:2px;color:#7e9dc5}
+.selected-count{margin-left:auto;color:#80a1d1;font-weight:700;font-size:10px;white-space:nowrap}
+.wardrobe-presets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin:0 0 13px}.wardrobe-presets button{padding:8px 3px;border:1px solid #e2e9f4;background:#f8faff;color:#5877a2;border-radius:10px;font-size:10px;font-weight:750;min-height:32px}.wardrobe-presets button.primary{background:#e6f1ff;color:#3579ce;border-color:#bcdcff}
+.wardrobe-group{margin-bottom:14px}.wardrobe-group[hidden]{display:none!important}.wardrobe-title{display:flex;align-items:center;justify-content:space-between;gap:5px;margin-bottom:7px}.wardrobe-title h3{font-size:12px;display:flex;align-items:center;gap:5px;color:#40516b;margin:0;font-weight:750;letter-spacing:-.25px}.wardrobe-title h3 span{font-size:14px}.swatch-button{min-width:20px;min-height:20px;border-radius:50%;border:3px solid white;outline:1px solid #d1d9e8;background:var(--swatch,#eee);padding:0;box-shadow:0 1px 3px #0002}
+.cloth-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.garment-card{padding:3px;border:2px solid transparent;background:#f6f7fa;border-radius:12px;min-width:0;min-height:74px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#79869a;transition:border-color .1s,background .1s}.garment-card.selected{border-color:var(--blue);background:#eef6ff;box-shadow:0 1px 4px #2f7fdf2a;color:#356cae}.garment-preview{width:100%;height:66px;display:grid;place-items:center;overflow:hidden}.garment-preview img{max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain}.garment-none{font-size:23px;color:#b6becc}.garment-card small{display:block;max-width:100%;font-size:9px;font-weight:650;line-height:1.25;word-break:keep-all;text-align:center;overflow-wrap:anywhere}
+.color-editor{border-top:1px solid #edf0f5;margin-top:10px;padding-top:14px}.color-header{display:flex;align-items:center;gap:7px;margin-bottom:11px}.color-header h3{margin:0;flex:1;font-size:13px}.color-header .heading-symbol{font-size:16px}.color-select-row{display:flex;gap:5px;align-items:center;margin-bottom:12px}#quickColorTarget{min-width:0;width:100%;background:#f8faff;border:1px solid #e2e9f4;border-radius:10px;padding:8px 5px;color:#5b6c84;font-size:11px;font-weight:750}.quick-swatch{width:29px;height:29px;border-radius:50%;background:#666;box-shadow:0 0 0 1px #c5d1e1, inset 0 0 0 3px white;flex:none}
+.quick-row{margin:0 0 11px}.quick-row label{display:flex;align-items:center;justify-content:space-between;color:#5c6c81;font-size:11px;font-weight:650;margin-bottom:3px}.quick-row output{font-size:10px;color:#8d98a7}.quick-slider{height:7px!important;margin-bottom:3px!important}.quick-reset{background:#f5f8fc;border:1px solid #e5e9f1;color:#7b8a9e;border-radius:8px;padding:7px 9px;font-size:10px;font-weight:750;width:100%}
+.footer{display:flex;justify-content:center;align-items:center;gap:10px;min-height:57px}.done-button{background:linear-gradient(135deg,#56a7fa,#337fe8);border:1px solid #5eaeff;color:white;box-shadow:0 7px 17px #4088ea42;font-size:17px;font-weight:800;letter-spacing:-.3px;border-radius:18px;min-height:54px;width:min(460px,100%)}.done-button .hanger{font-size:19px;margin-right:9px}.footer-tip{font-size:11px;color:#9daabd;white-space:nowrap}
+@media(min-width:960px){.scroll-card{padding:17px 17px 20px}.cloth-grid{gap:8px}.garment-card{min-height:90px}.garment-preview{height:78px}.garment-card small{font-size:10px}.workspace{gap:18px}.footer{margin-top:0}}
+@media(max-width:860px){
+ .app-shell{padding:7px 7px max(8px,env(safe-area-inset-bottom));gap:6px;grid-template-rows:auto minmax(0,1fr) auto}
+ .topbar{min-height:25px;padding:0 5px}.brand{font-size:12px;gap:6px}.brand-icon{width:23px;height:23px;border-radius:7px;font-size:15px}.top-right{font-size:9px}.status-pill{padding:4px 7px;font-size:9px}
+ .workspace{grid-template-columns:minmax(0,30%) minmax(0,37%) minmax(0,33%);gap:4px}
+ .sidebar{gap:5px}.segmented{border-radius:12px;padding:3px;gap:1px}.segmented button{font-size:10px;padding:3px 0;min-height:31px;border-radius:9px}
+ .scroll-card{border-radius:13px;padding:9px 6px 13px;box-shadow:0 2px 10px #5264820b}
+ .panel-heading{gap:3px;margin-bottom:9px}.panel-heading h2{font-size:10px;letter-spacing:-.25px}.heading-symbol{font-size:14px}.tiny-ghost{width:21px;height:21px;font-size:14px}
+ .group{margin-top:10px;padding-top:9px}.group h3{font-size:9px;margin-bottom:10px}
+ .control{margin-bottom:13px}.readout{margin-bottom:5px;flex-wrap:wrap;gap:1px}.readout label{font-size:9px;line-height:1.3}.readout output{font-size:9px}
+ input[type=range]{height:5px;margin:4px 0 8px}input[type=range]::-webkit-slider-thumb{width:14px;height:14px}input[type=range]::-moz-range-thumb{width:14px;height:14px}
+ .skin-presets{gap:4px;grid-template-columns:repeat(3,1fr)}.palette-heading label{font-size:9px}.palette-holder{height:100px}.hexrow{flex-wrap:wrap}.hexrow input[type=text]{font-size:9px}.hexrow button{flex:1;font-size:9px}.state-note{font-size:9px}
+ .center-stage{padding:3px 0 4px}.stage-caption .micro{font-size:7px;letter-spacing:1px}.stage-caption strong{font-size:10px}.canvas-bed{overflow:hidden}.art{max-width:none;width:187%;height:auto;max-height:100%;object-fit:contain}
+ .stage-controls{gap:3px;max-width:128px}.stage-controls button{border-radius:10px;min-height:36px;padding:5px 1px;font-size:9px}.stage-controls button span{font-size:14px}
+ .right-heading{margin-bottom:7px}.selected-count{font-size:8px}
+ .wardrobe-presets{gap:3px;margin:0 0 10px;grid-template-columns:repeat(2,minmax(0,1fr))}.wardrobe-presets button{font-size:8px;line-height:1.15;min-height:28px;padding:4px 2px;border-radius:7px}
+ .wardrobe-group{margin-bottom:10px}.wardrobe-title{gap:2px;margin-bottom:5px}.wardrobe-title h3{font-size:9px}.wardrobe-title h3 span{font-size:10px}.swatch-button{min-width:16px;min-height:16px}
+ .cloth-grid{gap:3px}.garment-card{border-width:1.5px;border-radius:7px;min-height:48px;padding:2px 1px;gap:0}.garment-preview{height:40px}.garment-none{font-size:16px}.garment-card small{font-size:7px;letter-spacing:-.3px}
+ .color-editor{margin-top:7px;padding-top:10px}.color-header h3{font-size:10px}.color-header .heading-symbol{font-size:13px}.color-select-row{gap:3px}.quick-swatch{width:19px;height:19px}#quickColorTarget{font-size:9px;padding:6px 2px}.quick-row{margin-bottom:8px}.quick-row label{font-size:9px}.quick-reset{font-size:9px}
+ .footer{min-height:38px}.done-button{font-size:12px;min-height:37px;max-width:250px;border-radius:13px}.done-button .hanger{font-size:14px;margin-right:5px}.footer-tip{display:none}
+}
+@media(max-width:370px){.workspace{grid-template-columns:minmax(0,29%) minmax(0,38%) minmax(0,33%)}.scroll-card{padding:8px 4px 10px}.cloth-grid{gap:2px}.garment-card small{font-size:6.5px}.brand{font-size:11px}}
+@media(max-height:650px){.app-shell{gap:4px;padding-top:3px}.topbar{min-height:20px}.footer{min-height:31px}.done-button{min-height:30px}.stage-caption{display:none}.stage-controls button{min-height:30px}.stage-controls button span{display:inline;margin-right:3px}}
+
+.face-eyes-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.eye-option{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:75px;border:2px solid #dce6f2;background:#f8faff;border-radius:12px;color:#536783;font-size:11px;font-weight:700}.eye-option.selected{border-color:var(--blue);background:#edf5ff;color:#3178d2}.eye-icon{font-size:23px;color:#36465e}.blink-toggle{display:flex;align-items:center;gap:7px;font-size:12px;margin-bottom:15px;line-height:1.4}.blink-toggle input{accent-color:#438fee}.face-preview-button{padding:10px 7px;width:100%;border-radius:10px;background:#e9f2ff;color:#367bce;border:1px solid #c4dfff;font-size:11px;font-weight:750}@media(max-width:860px){.eye-option{min-height:54px;font-size:9px;padding:4px}.eye-icon{font-size:16px}.blink-toggle{font-size:9px;align-items:flex-start}.face-preview-button{font-size:9px;padding:7px 3px}}
+
+/* Face / iris palette; narrow enough for the existing mobile sidebar. */
+.iris-palette{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:8px 0 13px}
+.iris-choice{min-width:0;padding:7px 2px;border:1px solid #e4eaf3;border-radius:11px;background:#f8faff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:10px;font-weight:700;color:#5b6b83}
+.iris-choice.selected{background:#edf6ff;border-color:#5496eb;box-shadow:0 0 0 1px #5496eb inset;color:#3272b8}
+.iris-swatch{display:block;width:25px;height:25px;border-radius:50%;background:radial-gradient(circle at 28% 23%,#ffffffc9 0 9%,var(--iris-color) 18% 65%,#263040 95%);border:2px solid #fff;box-shadow:0 0 0 1px #bfcbdc}
+.iris-picker-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.iris-picker-row label{font-size:11px;color:#5f6b7e;font-weight:700}
+.iris-picker-fields{display:flex;align-items:center;gap:5px;width:100%}
+.iris-picker-fields input[type=color]{width:38px;height:33px;min-width:0;flex:none;border:1px solid #dce4ee;border-radius:9px;padding:2px;background:white}
+.iris-picker-fields input[type=text]{min-width:0;width:100%;height:33px;padding:5px 7px;border:1px solid #dce4ee;border-radius:9px;font-size:11px;font-family:ui-monospace,monospace}
+.iris-reset{width:100%;padding:9px 4px;border-radius:9px;background:#f5f8fc;border:1px solid #e0e7f1;color:#597497;font-size:11px;font-weight:750}
+@media(max-width:860px){.iris-palette{gap:3px;margin-bottom:10px}.iris-choice{padding:5px 1px;font-size:8px;border-radius:7px}.iris-swatch{width:18px;height:18px}.iris-picker-row label{font-size:9px}.iris-picker-fields{gap:3px}.iris-picker-fields input[type=color]{width:28px;height:28px}.iris-picker-fields input[type=text]{font-size:9px;height:28px;padding:3px}.iris-reset{font-size:9px;padding:7px 2px}}
+
+/* Hair tab: compact four-tab mobile layout and an expandable hairstyle registry. */
+.left-tabs button {letter-spacing:-.35px}
+.hair-style-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.hair-option {display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;
+ min-width:0;padding:7px 3px;border:2px solid transparent;border-radius:13px;background:#f6f7fa;color:#64748b;font-size:11px;font-weight:750}
+.hair-option.selected {border-color:var(--blue);background:#edf6ff;color:#2872cc}
+.hair-option .hair-thumb {display:flex;align-items:center;justify-content:center;width:100%;height:85px;overflow:hidden;border-radius:9px;background:#ffffffb8}
+.hair-option .hair-thumb img {width:70px;height:85px;object-fit:contain;object-position:center;display:block}
+.hair-option .hair-none-icon {font-size:27px;color:#b1bdd0}
+.hair-motion-toggle {display:flex;gap:7px;align-items:center;font-size:12px;margin-bottom:13px;color:#43536b;line-height:1.4}
+.hair-motion-toggle input {accent-color:#438fee}
+.hair-tip {font-size:10px;color:#8895a9;line-height:1.5}
+@media(max-width:860px){
+ .left-tabs button{font-size:9px;letter-spacing:-.8px;padding-left:0;padding-right:0}
+ .hair-style-grid{gap:4px}
+ .hair-option{padding:3px 1px;border-width:1.5px;border-radius:8px;font-size:8px;gap:3px}
+ .hair-option .hair-thumb{height:53px}
+ .hair-option .hair-thumb img{height:52px;width:46px}
+ .hair-option .hair-none-icon{font-size:18px}
+ .hair-motion-toggle{font-size:9px;align-items:flex-start}
+ .hair-tip{font-size:9px}
+}
+
+.canvas-bed.wide-outfit .art{max-width:100%;width:auto;height:100%;max-height:100%;object-fit:contain}
+@media(max-width:860px){.canvas-bed.wide-outfit .art{max-width:100%;width:100%;height:auto;max-height:100%;object-fit:contain}}
+</style></head><body>
+<div class="app-shell">
+<header class="topbar"><div class="brand"><span class="brand-icon">✦</span><span>DRESS LAB</span></div><div class="top-right"><span class="status-pill">룩 편집 중</span><span>MY WARDROBE</span></div></header>
+<main class="workspace">
+<aside class="sidebar left-sidebar" aria-label="체형과 얼굴, 머리카락">
+ <div class="segmented left-tabs" role="tablist" aria-label="왼쪽 편집 메뉴">
+  <button class="tab active" id="tab-body" type="button" role="tab" aria-selected="true" aria-controls="panel-body">체형</button>
+  <button class="tab" id="tab-skin" type="button" role="tab" aria-selected="false" aria-controls="panel-skin">피부톤</button>
+   <button class="tab" id="tab-face" type="button" role="tab" aria-selected="false" aria-controls="panel-face">얼굴</button>
+   <button class="tab" id="tab-hair" type="button" role="tab" aria-selected="false" aria-controls="panel-hair">머리</button>
+ </div>
+ <div class="scroll-card" id="leftScroll"><section id="panel-body" class="tab-panel" role="tabpanel" aria-labelledby="tab-body">
+<div class="panel-heading"><span class="heading-symbol">♙</span><h2>체형 조절</h2><button class="tiny-ghost" id="resetBody" type="button" title="체형만 초기화" aria-label="체형만 초기화">↻</button></div>
+<div class="group"><h3>머리 · 어깨 · 가슴</h3>
+<div class="control"><div class="readout"><label for="head">머리 크기</label><output></output></div><input id="head" type="range" min="90" max="113" value="100" step="1"></div>
+<div class="control"><div class="readout"><label for="neck">목 길이</label><output></output></div><input id="neck" type="range" min="78" max="127" value="100" step="1"></div>
+<div class="control"><div class="readout"><label for="shoulders">어깨 너비</label><output></output></div><input id="shoulders" type="range" min="89" max="116" value="100" step="1"></div>
+<div class="control"><div class="readout"><label for="bust">바스트</label><output></output></div><input id="bust" type="range" min="89" max="119" value="100" step="1"></div>
+</div><div class="group"><h3>허리 · 골반</h3>
+<div class="control"><div class="readout"><label for="waist">허리</label><output></output></div><input id="waist" type="range" min="86" max="117" value="100" step="1"></div>
+<div class="control"><div class="readout"><label for="hips">골반</label><output></output></div><input id="hips" type="range" min="88" max="116" value="100" step="1"></div>
+<div class="control"><div class="readout"><label for="ratio">상하체 비율</label><output></output></div><input id="ratio" type="range" min="82" max="118" value="100" step="1"></div>
+</div><div class="group"><h3>팔</h3>
+<div class="control"><div class="readout"><label for="arms">팔 굵기</label><output></output></div><input id="arms" type="range" min="91" max="111" value="100" step="1"></div>
+<div class="control"><div class="readout"><label for="armLength">팔 길이</label><output></output></div><input id="armLength" type="range" min="88" max="114" value="100" step="1"></div>
+</div><div class="group"><h3>하체</h3>
+<div class="control"><div class="readout"><label for="thighs">허벅지 굵기</label><output></output></div><input id="thighs" type="range" min="93" max="114" value="100" step="1"></div>
+<div class="control"><div class="readout"><label for="calves">종아리 굵기</label><output></output></div><input id="calves" type="range" min="94" max="112" value="100" step="1"></div>
+</div>
+</section>
+<section id="panel-skin" class="tab-panel" role="tabpanel" aria-labelledby="tab-skin" hidden>
+<div class="panel-heading"><span class="heading-symbol">◉</span><h2>피부톤</h2></div><div class="skin-presets"><button class="skin-sample" type="button" data-skin="#FCE3CF" aria-label="기본 피부톤" style="--tone:#FCE3CF"></button><button class="skin-sample" type="button" data-skin="#F2CDB5" aria-label="피부톤 2" style="--tone:#F2CDB5"></button><button class="skin-sample" type="button" data-skin="#DBA781" aria-label="피부톤 3" style="--tone:#DBA781"></button><button class="skin-sample" type="button" data-skin="#AC7554" aria-label="피부톤 4" style="--tone:#AC7554"></button><button class="skin-sample" type="button" data-skin="#7C4E3D" aria-label="피부톤 5" style="--tone:#7C4E3D"></button></div>
+<div class="palette-card">
+ <div class="palette-heading"><label for="svPalette">피부색 팔레트</label><div class="swatch-preview"><span id="tonePreview" class="tone-badge"></span></div></div>
+ <div id="paletteHolder" class="palette-holder"><canvas id="svPalette" width="360" height="194" role="img" aria-label="가로로 채도, 세로로 밝기를 지정하는 피부톤 팔레트"></canvas><div id="paletteCursor" class="palette-cursor"></div></div>
+ <div class="color-row"><div class="color-col"><label for="hue">색상</label><input id="hue" type="range" min="0" max="360" value="25" step="1"></div></div>
+ <div class="hexrow"><input id="skinHex" type="text" inputmode="text" spellcheck="false" maxlength="7" aria-label="피부톤 HEX 색상값" value="#FCE3CF"><input id="nativeColor" type="color" aria-label="기기의 기본 색상 선택기" value="#fce3cf"><button class="color-reset" id="originalSkin" type="button">원본 색상</button></div>
+ <div class="group"><div class="control"><div class="readout"><label for="skinStrength">피부톤 적용 강도</label><output></output></div><input id="skinStrength" type="range" min="0" max="100" value="100" step="1"></div></div>
+ <p class="state-note" id="skinStatus">원본 피부톤 적용 중</p>
+ <p class="skin-info">팔레트 안을 누르거나 드래그하면 색을 바꿀 수 있다. 아래 색상 막대로 계열을 선택하며, HEX 입력 또는 기기 색상 선택기도 사용할 수 있다.</p>
+</div>
+</section>
+ <section id="panel-face" class="tab-panel" role="tabpanel" aria-labelledby="tab-face" hidden>
+  <div class="panel-heading"><span class="heading-symbol">◡</span><h2>얼굴 · 눈</h2></div>
+  <div class="group"><h3>눈 모양</h3>
+   <div class="face-eyes-grid" id="faceEyeOptions"><button type="button" class="eye-option selected" data-eye="default" aria-pressed="true"><span class="eye-icon">◡ ◡</span><span>기본 눈</span></button></div>
+   <p class="state-note">눈은 항상 장착된다. 인형 화면을 탭하면 눈동자가 상하좌우로 움직인다. 위아래를 볼 때 홍채 일부가 눈꺼풀에 자연스럽게 가려진다.</p>
+  </div>
+  <div class="group iris-controls"><h3>눈동자 색상</h3>
+   <div class="iris-palette" id="irisPresets" role="group" aria-label="홍채 색상 선택">
+    <button type="button" class="iris-choice selected" data-iris="original" aria-pressed="true" aria-label="원본 홍채색"><span class="iris-swatch" style="--iris-color:#9d7a8e"></span><span>원본</span></button>
+    <button type="button" class="iris-choice" data-iris="#79503d" aria-pressed="false" aria-label="갈색 홍채"><span class="iris-swatch" style="--iris-color:#79503d"></span><span>갈색</span></button>
+    <button type="button" class="iris-choice" data-iris="#547fc2" aria-pressed="false" aria-label="파란색 홍채"><span class="iris-swatch" style="--iris-color:#547fc2"></span><span>파랑</span></button>
+    <button type="button" class="iris-choice" data-iris="#598c69" aria-pressed="false" aria-label="초록색 홍채"><span class="iris-swatch" style="--iris-color:#598c69"></span><span>초록</span></button>
+    <button type="button" class="iris-choice" data-iris="#8a8b98" aria-pressed="false" aria-label="회색 홍채"><span class="iris-swatch" style="--iris-color:#8a8b98"></span><span>회색</span></button>
+    <button type="button" class="iris-choice" data-iris="#d6aa52" aria-pressed="false" aria-label="호박색 홍채"><span class="iris-swatch" style="--iris-color:#d6aa52"></span><span>호박</span></button>
+   </div>
+   <div class="iris-picker-row"><label for="irisColorPicker">직접 선택</label><div class="iris-picker-fields"><input type="color" id="irisColorPicker" value="#9d7a8e" aria-label="눈동자 색상 선택기"><input type="text" id="irisHex" value="#9D7A8E" maxlength="7" inputmode="text" spellcheck="false" aria-label="눈동자 색상 HEX 값"></div></div>
+   <button type="button" class="iris-reset" id="irisColorReset">원본 홍채색으로 되돌리기</button>
+   <p class="state-note">홍채 질감과 빛 반사는 유지한 채 색상이 바뀐다.</p>
+  </div>
+  <div class="group"><h3>눈 깜박임</h3>
+   <label class="blink-toggle"><input id="blinkEnabled" type="checkbox" checked><span>자동으로 눈 깜박이기</span></label>
+   <div class="control"><div class="readout"><label for="blinkSpeed">깜박임 간격</label><output id="blinkSpeedLabel">보통</output></div><input id="blinkSpeed" type="range" min="2" max="8" step="1" value="4"></div>
+   <button id="blinkNow" class="face-preview-button" type="button">지금 눈 깜박이기</button>
+  </div>
+ </section>
+<section id="panel-hair" class="tab-panel" role="tabpanel" aria-labelledby="tab-hair" hidden>
+ <div class="panel-heading"><span class="heading-symbol">♧</span><h2>머리카락</h2></div>
+ <div class="group"><h3>헤어스타일</h3>
+  <div class="hair-style-grid" id="hairStyleOptions" role="group" aria-label="머리카락 스타일 선택">
+   <button type="button" class="hair-option selected" data-hair="softBrown" aria-pressed="true">
+    <span class="hair-thumb"><img id="hairStylePreview" alt="갈색 미디엄 헤어 미리보기"></span><span>미디엄 헤어</span>
+   </button>
+   <button type="button" class="hair-option" data-hair="none" aria-pressed="false">
+    <span class="hair-thumb hair-none-icon" aria-hidden="true">∅</span><span>머리 없음</span>
+   </button>
+  </div>
+  <p class="hair-tip">현재 첨부한 헤어를 기본으로 장착했다. 이후 다른 스타일도 추가할 수 있다.</p>
+ </div>
+ <div class="group"><h3>자연스러운 움직임</h3>
+  <label class="hair-motion-toggle" for="hairSwayEnabled"><input type="checkbox" id="hairSwayEnabled" checked><span>머리끝 살랑이기</span></label>
+  <div class="control">
+   <div class="readout"><label for="hairSwayStrength">살랑임 강도</label><output id="hairSwayOutput">45%</output></div>
+   <input id="hairSwayStrength" type="range" min="0" max="100" value="45" step="1">
+  </div>
+  <p class="hair-tip">머리 윗부분은 고정되고 양옆 머리끝이 가볍게 움직인다. 머리 크기와 목 길이 변형에도 따라간다.</p>
+ </div>
+</section>
+</div>
+</aside>
+<section class="center-stage" aria-label="인형 미리보기">
+ <div class="stage-caption"><span class="micro">DRESS-UP STUDIO</span><strong>오늘의 스타일</strong></div>
+ <div class="canvas-bed"><canvas id="view" class="art" width="400" height="825" role="img" aria-label="의상을 입힌 인형"></canvas></div>
+ <div class="stage-controls"><button id="randomLook" type="button"><span>⚄</span>랜덤</button><button id="reset" type="button"><span>↻</span>초기화</button></div>
+</section>
+<aside class="sidebar right-sidebar" aria-label="의상과 색상">
+ <div class="segmented category-tabs" role="group" aria-label="의상 필터"><button type="button" data-filter="upper">상체</button><button type="button" data-filter="lower">하체</button><button type="button" data-filter="accessory">장식</button><button type="button" data-filter="all" class="active">전체</button></div>
+ <div class="scroll-card right-scroll" id="rightScroll"><section id="panel-wardrobe" class="tab-panel" role="region" aria-label="옷장 편집">
+<div class="panel-heading right-heading"><span class="heading-symbol">♜</span><h2>옷장</h2><span id="selectionCount" class="selected-count">0 착용</span></div>
+
+<div class="wardrobe-presets"><button type="button" id="removeAllOutfit">의상 모두 벗기</button></div>
+<div id="wardrobeGroups"></div>
+
+</section>
+
+ <section class="color-editor" id="colorEditor"><div class="color-header"><span class="heading-symbol">◉</span><h3>색상 조절</h3><button type="button" id="jumpWardrobe" class="tiny-ghost" title="옷장 맨 위로" aria-label="옷장 맨 위로">↑</button></div>
+  <div class="color-select-row"><select id="quickColorTarget" aria-label="색상을 바꿀 의상 선택"></select><span id="quickColorSwatch" class="quick-swatch"></span></div>
+  <div class="quick-row"><label for="quickHue">색조 <output id="quickHueVal">0°</output></label><input type="range" id="quickHue" class="quick-slider hue" min="0" max="360" value="0"></div>
+  <div class="quick-row"><label for="quickSat">채도 <output id="quickSatVal">0%</output></label><input type="range" id="quickSat" class="quick-slider" min="0" max="100" value="0"></div>
+  <div class="quick-row"><label for="quickVal">밝기 <output id="quickValVal">0%</output></label><input type="range" id="quickVal" class="quick-slider" min="0" max="100" value="0"></div>
+  <button id="quickColorReset" type="button" class="quick-reset">선택한 의상 원본 색상</button>
+ </section>
+ </div>
+</aside>
+</main>
+<footer class="footer"><button id="save" type="button" class="done-button"><span class="hanger">♧</span>코디 완성 · PNG 저장</button><span class="footer-tip">데님 팬츠 교체 · 블랙 탑 4종 추가</span></footer>
+</div>
+
+<script src="app/wardrobe-extension.js"></script>
+<script>
+
+'use strict';
+const OUTFIT_SOURCES = {"shirt": "assets/legacy/sprite-001.png", "pants": "assets/legacy/sprite-002.png", "whiteShirt": "assets/legacy/sprite-003.png", "shirtErase": "assets/legacy/sprite-004.png"};
+const ADDITIONAL_SOURCES = {"ivoryBodice":"assets/legacy/sprite-005.png","ivorySleeves":"assets/legacy/sprite-006.png","brownVest":"assets/legacy/sprite-007.png","plaidSkirt":"assets/legacy/sprite-008.png","brownSocks":"assets/legacy/sprite-009.png","brownLoafers":"assets/legacy/sprite-010.png","neckRibbon":"assets/legacy/sprite-011.png"};
+const BLACK_OUTFIT_SOURCES={
+ 'silverNecklace':'assets/legacy/sprite-012.png',
+ 'silverWaistChain':'assets/legacy/sprite-013.png',
+ 'blackSlacks':'assets/legacy/sprite-014.png',
+ 'blackSleeves':'assets/legacy/sprite-015.png',
+ 'blackBodice':'assets/legacy/sprite-016.png'
+};
+const SOURCES = {"base_fill": "assets/legacy/sprite-017.png", "head": "assets/legacy/sprite-018.png", "neck_chest": "assets/legacy/sprite-019.png", "arm_left": "assets/legacy/sprite-020.png", "arm_right": "assets/legacy/sprite-021.png", "shoulder_left": "assets/legacy/sprite-022.png", "shoulder_right": "assets/legacy/sprite-023.png", "waist": "assets/legacy/sprite-024.png", "pelvis": "assets/legacy/sprite-025.png", "thigh_left": "assets/legacy/sprite-026.png", "thigh_right": "assets/legacy/sprite-027.png", "shin_left": "assets/legacy/sprite-028.png", "shin_right": "assets/legacy/sprite-029.png"};
+const placement = {
+ head:[80,17,89,112], neck_chest:[75,118,100,115], shoulder_left:[54,154,47,28],shoulder_right:[134,155,45,27],
+ waist:[81,251,87,54], pelvis:[67,306,117,67],thigh_left:[61,359,60,139],thigh_right:[127,363,60,135],
+ shin_left:[72,499,41,221],shin_right:[136,499,43,221],arm_left:[24,157,45,254],arm_right:[178,153,54,263]
+};
+const order=['base_fill','head','neck_chest','arm_left','arm_right','shoulder_left','shoulder_right','waist','pelvis','thigh_left','thigh_right','shin_left','shin_right'];
+const ID=['head','neck','shoulders','bust','waist','hips','ratio','arms','armLength','thighs','calves','skinStrength'];
+const $=id=>document.getElementById(id);
+const input=Object.fromEntries(ID.map(id=>[id,$(id)]));
+const COAT_OUTFIT_SOURCES={
+ 'blackCoatBack':'assets/legacy/sprite-030.png',
+ 'blackCoatFront':'assets/legacy/sprite-031.png',
+ 'blackCoatSleeves':'assets/legacy/sprite-032.png'
+};
+const TOP_OUTFIT_SOURCES={
+  'blackCamiTop':'assets/legacy/sprite-033.png',
+  'blackTankTop':'assets/legacy/sprite-034.png',
+  'blackHalterTop':'assets/legacy/sprite-035.png',
+  'blackTubeTop':'assets/legacy/sprite-036.png'
+};
+const emptyOutfitDefault={upper:'none',top:'none',vest:'none',outer:'none',skirt:'none',lower:'none',socks:'none',shoes:'none',neck:'none',waistAccessory:'none'};
+const wardrobeLayers=[
+ {id:'upper',label:'이너 상의',items:[['blackTurtleneck','블랙 터틀넥(소매 포함)'],['ivoryBlouse','아이보리 블라우스'],['whiteShirt','화이트 와이셔츠'],['shirt','기본 티셔츠'],['none','없음']]},
+ {id:'top',label:'탑',items:[['blackTubeTop','블랙 튜브톱'],['blackHalterTop','블랙 홀터넥 톱'],['blackTankTop','블랙 탱크톱'],['blackCamiTop','블랙 끈나시 톱'],['none','없음']]},
+ {id:'vest',label:'조끼',items:[['brownVest','브라운 조끼'],['none','없음']]},
+ {id:'outer',label:'아우터',items:[['blackCoat','블랙 코트'],['none','없음']]},
+ {id:'skirt',label:'스커트',items:[['plaidSkirt','체크 플리츠스커트'],['none','없음']]},
+ {id:'lower',label:'바지',items:[['blackSlacks','블랙 슬랙스'],['pants','블루 슬림진'],['none','없음']]},
+ {id:'socks',label:'양말',items:[['brownSocks','브라운 스타킹'],['none','없음']]},
+ {id:'shoes',label:'신발',items:[['brownLoafers','브라운 로퍼'],['none','없음']]},
+ {id:'neck',label:'목 장식',items:[['silverNecklace','실버 목걸이'],['neckRibbon','브라운 리본'],['none','없음']]},
+ {id:'waistAccessory',label:'허리 장식',items:[['silverWaistChain','실버 체인'],['none','없음']]}
+];
+const originalGarmentColors={
+ shirt:'#80B3E0',whiteShirt:'#F3F1F2',ivoryBlouse:'#D6BEAF',ivoryBodice:'#D6BEAF',ivorySleeves:'#D6BEAF',
+ brownVest:'#48372F',plaidSkirt:'#554035',pants:'#5885AC',blackTubeTop:'#26252A',blackHalterTop:'#26252A',blackTankTop:'#26252A',blackCamiTop:'#26252A',brownSocks:'#432E26',
+ brownLoafers:'#402D27',neckRibbon:'#52382D',blackTurtleneck:'#29282B',blackSlacks:'#333136',blackCoat:'#2B2A2F',blackCoatBack:'#2B2A2F',blackCoatFront:'#2B2A2F',blackCoatSleeves:'#2B2A2F',silverNecklace:'#D9D8D8',silverWaistChain:'#D9D8D8'
+};
+const garmentColors={...originalGarmentColors};
+const selectedLayers={...emptyOutfitDefault};
+const outfitImages={};
+const eraseSource=document.createElement('canvas');eraseSource.width=252;eraseSource.height=730;
+let erasePixels=null;
+let outfitSource=null, outfitCtx=null;
+let backOutfitSource=null, backOutfitCtx=null;
+let outfitPixels=null, backOutfitPixels=null, outfitTemp=document.createElement('canvas');
+const layerUI={};
+const layerColorHSV={};
+const imageGroup={ivoryBlouse:['ivorySleeves','ivoryBodice'],blackTurtleneck:['blackSleeves','blackBodice'],blackCoat:['blackCoatSleeves','blackCoatBack','blackCoatFront']};
+const layerDrawOrder=['socks','shoes','top','upper','lower','skirt','vest','outer','neck','waistAccessory'];
+const behindBodyKeys=new Set(['blackCoatBack']);
+const skinColorDefault='#fce3cf';
+let skinColor=skinColorDefault, skinSelected=false;
+let hsv={h:25,s:0.18,v:0.988};
+const paletteCanvas=$('svPalette'), paletteHolder=$('paletteHolder'), paletteCursor=$('paletteCursor');
+const tonePreview=$('tonePreview'), hueBar=$('hue'), skinHex=$('skinHex'),nativeColor=$('nativeColor'),skinStatus=$('skinStatus');
+// Eye-frame registry: each entry may provide open, half, and closed PNGs.
+const FACE_EYE_REGISTRY={default:{label:'기본 눈',frames:["assets/legacy/sprite-037.png","assets/legacy/sprite-038.png","assets/legacy/sprite-039.png"]}};
+let currentEye='default',blinkFrame=0,blinkTimer=0,blinkPhase=0;
+const eyeFrames=FACE_EYE_REGISTRY.default.frames.map(src=>{const image=new Image();image.src=src;return image});
+const eyeIrisLayer=new Image();eyeIrisLayer.src='assets/legacy/sprite-040.png';
+const eyeHighlightLayer=new Image();eyeHighlightLayer.src='assets/legacy/sprite-041.png';
+
+// The source eyelids, sclera, iris, and catchlights all share 252×730 doll coordinates.
+// Blue-white clip masks are extracted from the exact open and half-open sclera pixels.
+const eyeScleraMasks = ['assets/legacy/sprite-042.png','assets/legacy/sprite-043.png'].map(src=>{const img=new Image();img.src=src;return img});
+// All face textures use the base doll's 252 × 730 source coordinates.
+// The head sprite follows exactly the same eye-area transform as texturePoint().
+const FACE_EYE_TRACK={centerX:124.5,centerY:89,maxX:6.2,maxY:7.0};
+const gazeState={targetX:0,currentX:0,velocityX:0,targetY:0,currentY:0,velocityY:0,boing:0,active:false,lastTs:0,
+ highlightX:0,highlightVelocityX:0,highlightY:0,highlightVelocityY:0,highlightFollowY:0,highlightFollowVelocityY:0,irisHistory:[]};
+const clampValue=(v,lo,hi)=>Math.min(hi,Math.max(lo,v));
+let eyeOverlayBuffer=null,eyeOverlayCtx=null,scleraToneBuffer=null,scleraToneCtx=null;
+
+// Re-tint only the iris image, preserving the original alpha, shadows and radial grain.
+// 'original' always displays the unedited source pixels.
+let irisColor='original', irisPaintSource=eyeIrisLayer,irisTintCanvas=null,irisTintContext=null;
+function normalizeHex(value){
+ const cleaned=String(value||'').trim();
+ return /^#[0-9a-fA-F]{6}$/.test(cleaned)?cleaned.toLowerCase():null;
+}
+function refreshIrisTint(){
+ if(!eyeIrisLayer.complete||!eyeIrisLayer.naturalWidth)return;
+ if(irisColor==='original'){irisPaintSource=eyeIrisLayer;return;}
+ const value=normalizeHex(irisColor);if(!value)return;
+ if(!irisTintCanvas){irisTintCanvas=document.createElement('canvas');irisTintCanvas.width=252;irisTintCanvas.height=730;irisTintContext=irisTintCanvas.getContext('2d',{willReadFrequently:true});}
+ const tc=irisTintContext;
+ tc.clearRect(0,0,SW,SH);
+ tc.drawImage(eyeIrisLayer,0,0,SW,SH);
+ const original=tc.getImageData(0,0,SW,SH),p=original.data;
+ const selected=[1,3,5].map(i=>parseInt(value.slice(i,i+2),16));
+ for(let i=0;i<p.length;i+=4){
+  if(p[i+3]===0)continue;
+  const lum=.2126*p[i]+.7152*p[i+1]+.0722*p[i+2];
+  // Dark inner rims stay dark; bright radial flecks remain discernible.
+  const shade=clampValue((lum+12)/142,.32,1.72);
+  const sheen=clampValue((lum-166)/96,0,1)*.22;
+  for(let c=0;c<3;c++)p[i+c]=Math.round(Math.min(255,selected[c]*shade*(1-sheen)+255*sheen));
+ }
+ tc.putImageData(original,0,0);
+ irisPaintSource=irisTintCanvas;
+}
+function syncIrisColorUI(){
+ document.querySelectorAll('#irisPresets [data-iris]').forEach(btn=>{
+  const chosen=btn.dataset.iris.toLowerCase()===irisColor;
+  btn.classList.toggle('selected',chosen);btn.setAttribute('aria-pressed',String(chosen));
+ });
+ const hex=irisColor==='original'?'#9d7a8e':irisColor;
+ $('irisColorPicker').value=hex;
+ $('irisHex').value=hex.toUpperCase();$('irisHex').setAttribute('aria-invalid','false');
+}
+function setIrisColor(color){
+ const candidate=color==='original'?'original':normalizeHex(color);
+ if(!candidate)return false;
+ irisColor=candidate;
+ refreshIrisTint();syncIrisColorUI();queue();return true;
+}
+document.querySelectorAll('#irisPresets [data-iris]').forEach(btn=>btn.addEventListener('click',()=>setIrisColor(btn.dataset.iris)));
+$('irisColorPicker').addEventListener('input',ev=>setIrisColor(ev.target.value));
+$('irisHex').addEventListener('change',ev=>{
+ if(!setIrisColor(ev.target.value))ev.target.setAttribute('aria-invalid','true');
+});
+$('irisColorReset').addEventListener('click',()=>setIrisColor('original'));
+eyeIrisLayer.addEventListener('load',()=>{refreshIrisTint();queue();});
+syncIrisColorUI();
+
+function updateBlinkSpeedLabel(){
+ $('blinkSpeedLabel').textContent=Number($('blinkSpeed').value)<4?'빠름':Number($('blinkSpeed').value)>5?'느림':'보통';
+}
+function triggerEyeBoing(strength=.75){
+ gazeState.boing=Math.max(gazeState.boing,strength);
+ // A tiny vertical spring of the catchlight adds a soft animated bounce.
+ gazeState.highlightVelocityY-=.34*strength;
+ startGazeAnimation();
+}
+function paintScleraTone(ctx){
+ const mask=eyeScleraMasks[blinkFrame];
+ if(blinkFrame>1||!scleraToneCtx||!mask.complete||!mask.naturalWidth)return;
+ const sx=scleraToneCtx;
+ sx.setTransform(1,0,0,1,0,0);
+ sx.globalCompositeOperation='source-over';
+ sx.clearRect(0,0,SW,SH);
+ sx.drawImage(mask,0,0,SW,SH);
+ // A pale neutral veil gently desaturates and brightens the eye whites
+ // without changing the eyelid outlines or the iris itself.
+ sx.globalCompositeOperation='source-in';
+ sx.fillStyle='rgba(252,253,255,0.42)';
+ sx.fillRect(0,0,SW,SH);
+ sx.globalCompositeOperation='source-over';
+ ctx.drawImage(scleraToneBuffer,0,0,SW*dpr,SH*dpr);
+}
+function paintIrisOverlay(ctx){
+ const mask=eyeScleraMasks[blinkFrame];
+ if(blinkFrame>1||!eyeOverlayCtx||!eyeIrisLayer.complete||!eyeIrisLayer.naturalWidth||!mask.complete||!mask.naturalWidth)return;
+ const ex=eyeOverlayCtx;
+ ex.setTransform(1,0,0,1,0,0);ex.globalCompositeOperation='source-over';
+ ex.clearRect(0,0,SW,SH);
+ const dx=gazeState.currentX,dy=gazeState.currentY;
+ const wobble=Math.sin(performance.now()*.028)*gazeState.boing;
+ const scaleX=1+wobble*.035,scaleY=1-wobble*.024;
+ const irisLayer=irisPaintSource||eyeIrisLayer;
+ // Iris reacts first; both eye sprites keep their registered source-coordinate pivots.
+ ex.save();ex.translate(FACE_EYE_TRACK.centerX+dx,FACE_EYE_TRACK.centerY+dy);
+ ex.scale(scaleX,scaleY);
+ ex.drawImage(irisLayer,-FACE_EYE_TRACK.centerX,-FACE_EYE_TRACK.centerY,SW,SH);
+ ex.restore();
+ if(eyeHighlightLayer.complete&&eyeHighlightLayer.naturalWidth){
+  // The highlight follows ~75ms behind the iris, with a damped spring.
+  // Keep the small visual lag within the pupil area.
+  const highlightOffset=clampValue(gazeState.highlightX-dx,-1.8,1.8);
+  ex.save();
+  const highlightOffsetY=clampValue(gazeState.highlightFollowY-dy,-1.4,1.4);
+  ex.translate(FACE_EYE_TRACK.centerX+dx+highlightOffset,FACE_EYE_TRACK.centerY+dy+highlightOffsetY+clampValue(gazeState.highlightY,-.9,.9));
+  ex.scale(1-wobble*.01,1+wobble*.015);
+  ex.drawImage(eyeHighlightLayer,-FACE_EYE_TRACK.centerX,-FACE_EYE_TRACK.centerY,SW,SH);
+  ex.restore();
+ }
+ // Explicit masks follow the photographed white-of-eye aperture at each blink stage.
+ ex.globalCompositeOperation='destination-in';ex.drawImage(mask,0,0,SW,SH);
+ ex.globalCompositeOperation='source-over';
+ ctx.drawImage(eyeOverlayBuffer,0,0,SW*dpr,SH*dpr);
+}
+function paintEyes(){
+ if(!eyeFrames[blinkFrame]||!eyeFrames[blinkFrame].complete)return;
+ const ctx=canvas.getContext('2d'),p=values(),head=p[0];
+ // The actual head warp used by both WebGL and CPU renderers.
+ // For the eyes at y=89, texturePoint applies X=head scale,
+ // Y=126+(y-126)*head - (neck-1)*34. An affine mapping is exact here.
+ const anchor=texturePoint(FACE_EYE_TRACK.centerX,FACE_EYE_TRACK.centerY,p);
+ ctx.save();
+ ctx.translate(anchor[0]*dpr,anchor[1]*dpr);
+ ctx.scale(head,head);
+ ctx.translate(-FACE_EYE_TRACK.centerX*dpr,-FACE_EYE_TRACK.centerY*dpr);
+ // Draw sclera, iris, then delayed highlight. The iris is masked to the sclera.
+ ctx.drawImage(eyeFrames[blinkFrame],0,0,SW*dpr,SH*dpr);
+ if(blinkFrame<2)paintScleraTone(ctx);
+ if(blinkFrame<2)paintIrisOverlay(ctx);
+ ctx.restore();
+}
+function blinkOnce(){
+ if(blinkPhase)return;
+ blinkPhase=1;blinkFrame=1;triggerEyeBoing(.25);queue();
+ setTimeout(()=>{blinkFrame=2;queue()},75);
+ setTimeout(()=>{blinkFrame=1;queue()},165);
+ setTimeout(()=>{blinkFrame=0;blinkPhase=0;queue()},245);
+}
+function scheduleBlink(){
+ clearTimeout(blinkTimer);if(!$('blinkEnabled').checked)return;
+ const delay=Number($('blinkSpeed').value)*1000+Math.random()*1100;
+ blinkTimer=setTimeout(()=>{blinkOnce();scheduleBlink()},delay);
+}
+function setGazeTargetFromPointer(event){
+ const bedRect=document.querySelector('.canvas-bed').getBoundingClientRect();
+ const canvasRect=canvas.getBoundingClientRect();
+ if(!bedRect.width||!canvasRect.height)return;
+ // The vertical direction is relative to the eyes, not the middle of the body.
+ // This also follows the eye anchor when the head or neck length changes.
+ const sourceEye=texturePoint(FACE_EYE_TRACK.centerX,FACE_EYE_TRACK.centerY,values());
+ const eyeClientY=canvasRect.top+canvasRect.height*sourceEye[1]/H;
+ const verticalSpan=Math.max(24,canvasRect.height*115/H);
+ let nx=clampValue(2*(event.clientX-bedRect.left)/bedRect.width-1,-1,1);
+ let ny=clampValue((event.clientY-eyeClientY)/verticalSpan,-1,1);
+ // At diagonal extremes keep about half the iris visible inside each eye.
+ const magnitude=Math.hypot(nx,ny);
+ if(magnitude>1){nx/=magnitude;ny/=magnitude;}
+ gazeState.targetX=nx*FACE_EYE_TRACK.maxX;
+ gazeState.targetY=ny*FACE_EYE_TRACK.maxY;
+ triggerEyeBoing(.90);queue();
+}
+function startGazeAnimation(){
+ if(gazeState.active)return;
+ gazeState.active=true;gazeState.lastTs=0;
+ gazeState.irisHistory=[{t:performance.now()-100,x:gazeState.currentX,y:gazeState.currentY}];
+ requestAnimationFrame(stepGazeAnimation);
+}
+function stepGazeAnimation(timestamp){
+ if(!gazeState.active)return;
+ if(!gazeState.lastTs)gazeState.lastTs=timestamp;
+ const dt=clampValue((timestamp-gazeState.lastTs)/16.667,.5,2.2);
+ gazeState.lastTs=timestamp;
+ gazeState.velocityX+=(gazeState.targetX-gazeState.currentX)*.16*dt;
+ gazeState.velocityX*=Math.pow(.72,dt);
+ gazeState.currentX=clampValue(gazeState.currentX+gazeState.velocityX*dt,-6.7,6.7);
+ // Spring-driven vertical gaze; the pupil is clipped by the existing eye mask.
+ gazeState.velocityY+=(gazeState.targetY-gazeState.currentY)*.15*dt;
+ gazeState.velocityY*=Math.pow(.72,dt);
+ gazeState.currentY=clampValue(gazeState.currentY+gazeState.velocityY*dt,-7.55,7.55);
+ gazeState.boing*=Math.pow(.84,dt);
+ if(gazeState.boing<.015)gazeState.boing=0;
+ // A small history buffer intentionally delays the catchlight by about 75ms.
+ const hist=gazeState.irisHistory;
+ hist.push({t:timestamp,x:gazeState.currentX,y:gazeState.currentY});
+ const due=timestamp-75;
+ while(hist.length>2&&hist[1].t<=due)hist.shift();
+ const a=hist[0],b=hist[1]||a;
+ const blend=b.t===a.t?0:clampValue((due-a.t)/(b.t-a.t),0,1);
+ const delayedX=a.x+(b.x-a.x)*blend;
+ const delayedY=a.y+(b.y-a.y)*blend;
+ gazeState.highlightVelocityX+=(delayedX-gazeState.highlightX)*.21*dt;
+ gazeState.highlightVelocityX*=Math.pow(.77,dt);
+ gazeState.highlightX+=gazeState.highlightVelocityX*dt;
+ // The highlight trails the iris vertically as well, while retaining its own bounce.
+ gazeState.highlightFollowVelocityY+=(delayedY-gazeState.highlightFollowY)*.21*dt;
+ gazeState.highlightFollowVelocityY*=Math.pow(.77,dt);
+ gazeState.highlightFollowY+=gazeState.highlightFollowVelocityY*dt;
+ gazeState.highlightVelocityY+=(-gazeState.highlightY)*.18*dt;
+ gazeState.highlightVelocityY*=Math.pow(.76,dt);
+ gazeState.highlightY+=gazeState.highlightVelocityY*dt;
+ const moving=Math.abs(gazeState.targetX-gazeState.currentX)>.018||Math.abs(gazeState.velocityX)>.018||
+ Math.abs(gazeState.targetY-gazeState.currentY)>.018||Math.abs(gazeState.velocityY)>.018||
+ Math.abs(gazeState.highlightX-gazeState.currentX)>.025||Math.abs(gazeState.highlightVelocityX)>.018||
+ Math.abs(gazeState.highlightFollowY-gazeState.currentY)>.025||Math.abs(gazeState.highlightFollowVelocityY)>.018||
+ Math.abs(gazeState.highlightY)>.015||Math.abs(gazeState.highlightVelocityY)>.015;
+ if(moving||gazeState.boing>0){queue();requestAnimationFrame(stepGazeAnimation);return;}
+ gazeState.currentX=gazeState.targetX;gazeState.highlightX=gazeState.currentX;
+ gazeState.currentY=gazeState.targetY;gazeState.highlightFollowY=gazeState.currentY;
+ gazeState.velocityX=0;gazeState.highlightVelocityX=0;
+ gazeState.velocityY=0;gazeState.highlightFollowVelocityY=0;
+ gazeState.highlightY=0;gazeState.highlightVelocityY=0;
+ gazeState.irisHistory.length=0;gazeState.active=false;queue();
+}
+eyeFrames.concat(eyeScleraMasks,[eyeIrisLayer,eyeHighlightLayer]).forEach(image=>image.addEventListener('load',queue));
+$('blinkEnabled').addEventListener('change',()=>{scheduleBlink();queue();});
+$('blinkSpeed').addEventListener('input',()=>{updateBlinkSpeedLabel();scheduleBlink();});
+$('blinkNow').addEventListener('click',blinkOnce);
+updateBlinkSpeedLabel();scheduleBlink();
+const canvas=$('view');
+let W=400,H=825,OX=74,OY=30;const SW=252,SH=730;
+eyeOverlayBuffer=document.createElement('canvas');eyeOverlayBuffer.width=SW;eyeOverlayBuffer.height=SH;
+eyeOverlayCtx=eyeOverlayBuffer.getContext('2d');
+scleraToneBuffer=document.createElement('canvas');scleraToneBuffer.width=SW;scleraToneBuffer.height=SH;
+scleraToneCtx=scleraToneBuffer.getContext('2d');
+document.querySelector('.canvas-bed').addEventListener('pointerdown',setGazeTargetFromPointer);
+const source=document.createElement('canvas');source.width=SW;source.height=SH;
+const imgctx=source.getContext('2d',{willReadFrequently:true});
+outfitSource=document.createElement('canvas');outfitSource.width=SW;outfitSource.height=SH;
+outfitCtx=outfitSource.getContext('2d',{willReadFrequently:true});
+backOutfitSource=document.createElement('canvas');backOutfitSource.width=SW;backOutfitSource.height=SH;
+backOutfitCtx=backOutfitSource.getContext('2d',{willReadFrequently:true});
+outfitTemp.width=W;outfitTemp.height=H;
+let gl=null,glbuf=null,program=null,tex=null,uniforms=null,ready=false,queued=false,dpr=1, fallback=false, sourcePixels=null,glSurface=document.createElement('canvas');
+const smooth=(a,b,v)=>{let t=Math.max(0,Math.min(1,(v-a)/(b-a)));return t*t*(3-2*t)};
+const mix=(a,b,t)=>a+(b-a)*t;
+const SHAPE_ID=['head','neck','shoulders','bust','waist','hips','ratio','arms','armLength','thighs','calves'];
+function values(){return SHAPE_ID.map(k=>Number(input[k].value)/100)}
+function skinConfig(){return {color:skinColor,active:skinSelected,strength:Number(input.skinStrength.value)/100}}
+function paintSource(){
+ return Promise.all(order.map(key=>new Promise((resolve,reject)=>{
+ const image=new Image();image.onload=()=>resolve([key,image]);image.onerror=()=>reject(new Error('PNG 로딩 실패: '+key));image.src=SOURCES[key];
+ }))).then(arr=>{
+ imgctx.clearRect(0,0,SW,SH);
+ for(const [key,image] of arr){const b=placement[key]||[0,0,SW,SH];imgctx.drawImage(image,...b)}
+ });
+}
+function loadOutfitSources(){
+ const sources={...OUTFIT_SOURCES,...ADDITIONAL_SOURCES,...BLACK_OUTFIT_SOURCES,...COAT_OUTFIT_SOURCES,...TOP_OUTFIT_SOURCES};
+ const entries=Object.entries(sources).map(([key,src])=>new Promise((resolve,reject)=>{
+  const image=new Image();image.onload=()=>resolve([key,image]);image.onerror=()=>reject(new Error('의상 PNG 로딩 실패: '+key));image.src=src;
+ }));
+ return Promise.all(entries).then(arr=>{
+  for(const [key,img] of arr)outfitImages[key]=img;
+  eraseSource.getContext('2d').drawImage(outfitImages.shirtErase,0,0,SW,SH);
+  erasePixels=eraseSource.getContext('2d',{willReadFrequently:true}).getImageData(0,0,SW,SH);
+  composeOutfitSource();
+ });
+}
+// Preserve the source image only when the garment's original color is selected.
+// Otherwise substitute the selected RGB, using the source's luminance as a
+// shading map. No blue source RGB is blended back into the fabric.
+function garmentRgb(hex){
+ const m=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+ if(!m) return {r:128,g:128,b:128};
+ return {r:parseInt(m[1],16),g:parseInt(m[2],16),b:parseInt(m[3],16)};
+}
+function colorEase(a,b,x){const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3-2*t)}
+function tintGarment(image,hex,type){
+ const originalHex=originalGarmentColors[type]||'#808080';
+ if(hex.toLowerCase()===originalHex.toLowerCase())return image;
+ const iw=image.naturalWidth||SW,ih=image.naturalHeight||SH;
+ const off=document.createElement('canvas');off.width=iw;off.height=ih;
+ const ctx=off.getContext('2d',{willReadFrequently:true});
+ ctx.drawImage(image,0,0,iw,ih);
+ const {r:tr,g:tg,b:tb}=garmentRgb(hex);
+ const samples={whiteShirt:235,shirt:172,pants:134,blackTubeTop:48,blackHalterTop:43,blackTankTop:43,blackCamiTop:48,ivoryBodice:203,ivorySleeves:202,
+  brownVest:67,plaidSkirt:77,brownSocks:63,brownLoafers:65,neckRibbon:75,blackTurtleneck:45,blackSlacks:49,silverNecklace:215,silverWaistChain:215};
+ const reference=samples[type]||100;
+ const img=ctx.getImageData(0,0,iw,ih),d=img.data;
+ const newPart=!(type==='whiteShirt'||type==='shirt'||type==='pants');
+ for(let i=0;i<d.length;i+=4){
+  if(d[i+3]===0)continue;
+  const r=d[i],g=d[i+1],b=d[i+2];
+  const light=.2126*r+.7152*g+.0722*b;
+  // Preserve gilt buttons, buckles, and trim rather than repainting the metal.
+  const gilt=newPart && r>110 && g>76 && r>g*1.19 && g>b*1.32 && light>83 && type!=='ivoryBodice' && type!=='ivorySleeves';
+  if(gilt)continue;
+  const shade=Math.max(.30,Math.min(1.80,1+.78*(light-reference)/Math.max(55,reference)));
+  let nr=tr*shade,ng=tg*shade,nb=tb*shade;
+  // Dark ink and seams retain fine original linework.
+  const ink=1-colorEase(reference*.26,reference*.59,light);
+  const dark=light*.76;
+  nr=nr*(1-ink)+dark*ink;ng=ng*(1-ink)+dark*ink;nb=nb*(1-ink)+dark*ink;
+  if(tr+tg+tb<24 && shade>1){const relief=Math.min(17,(shade-1)*30);nr+=relief;ng+=relief;nb+=relief;}
+  d[i]=Math.max(0,Math.min(255,Math.round(nr)));
+  d[i+1]=Math.max(0,Math.min(255,Math.round(ng)));
+  d[i+2]=Math.max(0,Math.min(255,Math.round(nb)));
+ }
+ ctx.putImageData(img,0,0);
+ return off;
+}
+function composeOutfitSource(){
+ if(!outfitCtx||!backOutfitCtx)return;
+ outfitCtx.clearRect(0,0,SW,SH);
+ backOutfitCtx.clearRect(0,0,SW,SH);
+ for(const layer of layerDrawOrder){
+  const chosen=selectedLayers[layer];
+  if(chosen==='none')continue;
+  const sources=imageGroup[chosen]||[chosen];
+  for(const key of sources){
+   const image=outfitImages[key];if(!image||isExpandedPart(key))continue;
+   const tinted=tintGarment(image,garmentColors[chosen],chosen);
+   const target=behindBodyKeys.has(key)?backOutfitCtx:outfitCtx;
+   target.drawImage(tinted,0,0,SW,SH);
+  }
+ }
+ outfitPixels=outfitCtx.getImageData(0,0,SW,SH);
+ backOutfitPixels=backOutfitCtx.getImageData(0,0,SW,SH);
+}
+function shaders(){
+const vs=`precision highp float;
+uniform vec4 u_frame;
+attribute vec2 a_source;varying vec2 v_uv;uniform float p[11];
+const float PI=3.14159265;
+float S(float a,float b,float x){float t=clamp((x-a)/(b-a),0.,1.);return t*t*(3.-2.*t);}
+float M(float a,float b,float t){return a+(b-a)*t;}
+float profile(float y){
+ float ys[11];float ws[11];
+ ys[0]=132.;ws[0]=1.;
+ ys[1]=160.;ws[1]=p[2];
+ ys[2]=190.;ws[2]=M(p[2],p[3],.67);
+ ys[3]=226.;ws[3]=p[3];
+ ys[4]=263.;ws[4]=M(p[3],p[4],.65);
+ ys[5]=299.;ws[5]=p[4];
+ ys[6]=327.;ws[6]=M(p[4],p[5],.65);
+ ys[7]=370.;ws[7]=p[5];
+ ys[8]=409.;ws[8]=M(p[5],p[9],.36);
+ ys[9]=462.;ws[9]=p[9];
+ ys[10]=730.;ws[10]=1.;
+ float scale=1.;
+ for(int i=0;i<10;i++){if(y>=ys[i] && y<=ys[i+1]){scale=M(ws[i],ws[i+1],S(ys[i],ys[i+1],y));}}
+ if(y<ys[0])scale=1.;
+ return scale;
+}
+float leftCut(float y){
+ return M(68.,76.,S(178.,214.,y))-16.*S(230.,320.,y)-13.*S(330.,390.,y);
+}
+void main(){
+ float x=a_source.x,y=a_source.y;
+ float side=x<124.5?-1.:1.;
+ // Body control: smooth anatomical profile, no extra outline painted.
+ float cx=124.5;float centerX=cx+(x-cx)*profile(y);
+ float upperScale=M(p[0],1.,S(121.,152.,y));
+ centerX=M(cx+(x-cx)*upperScale,centerX,S(121.,156.,y));
+ // Each leg has an independent axis; influence connects smoothly through the hip and knee.
+ float legAxis=side<0.?91.5:157.5;
+ float thighW=p[9],calfW=p[10];
+ float legW=M(thighW,calfW,S(471.,547.,y));
+ legW=M(1.,legW,S(350.,426.,y));
+ legW=M(legW,1.,S(634.,709.,y));
+ // Maintain a continuous warp across the seam separating the two legs.
+ // Displacements decrease toward the central transparent gap to prevent folded mesh cells.
+ float innerInfluence=S(0.,24.,abs(x-cx));
+ float safeLegW=1.+(legW-1.)*innerInfluence;
+ float hipShift=side*27.*(p[5]-1.)*(1.-.58*S(380.,590.,y))*innerInfluence;
+ float legX=legAxis+(x-legAxis)*safeLegW+hipShift+side*max(0.,p[9]-1.)*2.15*S(390.,466.,y)*innerInfluence;
+ centerX=M(centerX,legX,S(363.,432.,y));
+ // Arms are driven by a shoulder pivot and a small outward rotation, not by bust/waist/hip scaling.
+ float armCut=side<0.?leftCut(y):249.-leftCut(y);
+ float armWeight=(side<0.?1.-S(armCut-18.,armCut+18.,x):S(armCut-18.,armCut+18.,x))*S(156.,193.,y)*(1.-S(444.,565.,y));
+ float pivotX=side<0.?59.:191.;
+ float armAxis=pivotX+side*7.*S(180.,285.,y)+side*3.*S(285.,390.,y);
+ float shoulderOffset=side*54.*(p[2]-1.);
+ float fullness=max(0.,(p[3]-1.)*.42+(p[2]-1.)*.16);
+ float armAngle=(y-172.)*min(.06,fullness*.20);
+ float armX=armAxis+(x-armAxis)*p[7]+shoulderOffset+side*armAngle*S(174.,238.,y);
+ float finalX=M(centerX,armX,armWeight);
+ // Neck: head moves up when neck length increases; shoulders stay attached to chest.
+ float neckShift=(p[1]-1.)*34.;
+ float headY=126.+(y-126.)*p[0]-neckShift;
+ float neckY=y-neckShift*(1.-S(124.,160.,y));
+ float ratioShift=p[6]-1.;
+ float bodyY=y-ratioShift*82.*S(222.,369.,y)+ratioShift*148.*S(368.,717.,y);
+ float outY=M(headY,neckY,S(120.,138.,y));
+ outY=M(outY,bodyY,S(151.,185.,y));
+ // Arm length is anchored at the shoulder joint; upper/lower-body ratio does not stretch the arm pixels.
+ float armY=172.+(y-172.)*p[8];
+ float finalY=M(outY,armY,armWeight);
+ vec2 pos=vec2((finalX+u_frame.x)/u_frame.z*2.-1.,1.-(finalY+u_frame.y)/u_frame.w*2.);
+ gl_Position=vec4(pos,0.,1.);v_uv=vec2(x/252.,1.-y/730.);
+}`;
+const fs=`precision mediump float;varying vec2 v_uv;uniform sampler2D u_tex;
+void main(){gl_FragColor=texture2D(u_tex,v_uv);}`;
+return {vs,fs};
+}
+function makeShader(type,src){let sh=gl.createShader(type);gl.shaderSource(sh,src);gl.compileShader(sh);if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(sh));return sh}
+function initGL(){
+ gl=glSurface.getContext('webgl',{alpha:true,antialias:true,premultipliedAlpha:false,preserveDrawingBuffer:true})||glSurface.getContext('experimental-webgl');
+ if(!gl)throw Error('WebGL을 지원하지 않는 브라우저');
+ const {vs,fs}=shaders();program=gl.createProgram();gl.attachShader(program,makeShader(gl.VERTEX_SHADER,vs));gl.attachShader(program,makeShader(gl.FRAGMENT_SHADER,fs));gl.linkProgram(program);
+ if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(program));gl.useProgram(program);
+ const pos=gl.getAttribLocation(program,'a_source');uniforms={p:gl.getUniformLocation(program,'p[0]'),frame:gl.getUniformLocation(program,'u_frame')};
+ // Fine segmented lattice follows all anatomy with continuous vertices: no disconnected seams.
+ const xs=Array.from({length:Math.ceil(SW/4)+1},(_,i)=>Math.min(SW,i*4));
+ const ys=Array.from({length:Math.ceil(SH/4)+1},(_,i)=>Math.min(SH,i*4));
+ const arr=[];
+ for(let row=0;row<ys.length-1;row++){
+  if(row>0){arr.push(xs[0],ys[row],xs[0],ys[row]);}
+  for(let j=0;j<xs.length;j++){arr.push(xs[j],ys[row],xs[j],ys[row+1]);}
+  if(row<ys.length-2){arr.push(xs[xs.length-1],ys[row+1],xs[xs.length-1],ys[row+1]);}
+ }
+ glbuf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,glbuf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(arr),gl.STATIC_DRAW);
+ gl.enableVertexAttribArray(pos);gl.vertexAttribPointer(pos,2,gl.FLOAT,false,0,0);
+ gl.meshCount=arr.length/2;
+ tex=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,tex);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL,false);
+ gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+ gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+ gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,source);
+ gl.uniform1i(gl.getUniformLocation(program,'u_tex'),0);
+ gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+}
+function canvasSize(){dpr=fallback?1:Math.min(2,window.devicePixelRatio||1);const tw=Math.round(W*dpr),th=Math.round(H*dpr);if(canvas.width!==tw||canvas.height!==th){canvas.width=tw;canvas.height=th;}if(gl){if(glSurface.width!==tw||glSurface.height!==th){glSurface.width=tw;glSurface.height=th;}gl.viewport(0,0,tw,th)}}
+// CPU mesh renderer is a full fallback for mobile/browser WebGL restrictions. No outline is repainted.
+function texturePoint(x,y,p){
+ const head=p[0],neck=p[1],sh=p[2],bust=p[3],waist=p[4],hips=p[5],ratio=p[6],armW=p[7],armLen=p[8],thigh=p[9],calf=p[10];
+ const ys=[132,160,190,226,263,299,327,370,409,462,730];
+ const ws=[1,sh,mix(sh,bust,.67),bust,mix(bust,waist,.65),waist,mix(waist,hips,.65),hips,mix(hips,thigh,.36),thigh,1];
+ let scale=1;
+ for(let i=0;i<10;i++) if(y>=ys[i]&&y<=ys[i+1]) {scale=mix(ws[i],ws[i+1],smooth(ys[i],ys[i+1],y));break;}
+ const side=x<124.5?-1:1,cx=124.5;
+ let torsoX=cx+(x-cx)*scale;
+ let upperScale=mix(head,1,smooth(121,152,y));
+ torsoX=mix(cx+(x-cx)*upperScale,torsoX,smooth(121,156,y));
+ const legAxis=side<0?91.5:157.5;
+ let legW=mix(thigh,calf,smooth(471,547,y));
+ legW=mix(1,legW,smooth(350,426,y));
+ legW=mix(legW,1,smooth(634,709,y));
+ const innerInfluence=smooth(0,24,Math.abs(x-cx));
+ const safeLegW=1+(legW-1)*innerInfluence;
+ const hipShift=side*27*(hips-1)*(1-.58*smooth(380,590,y))*innerInfluence;
+ const legX=legAxis+(x-legAxis)*safeLegW+hipShift+side*Math.max(0,thigh-1)*2.15*smooth(390,466,y)*innerInfluence;
+ torsoX=mix(torsoX,legX,smooth(363,432,y));
+ const cutL=mix(68,76,smooth(178,214,y))-16*smooth(230,320,y)-13*smooth(330,390,y);
+ const cut=side<0?cutL:249-cutL;
+ const armMask=(side<0?1-smooth(cut-18,cut+18,x):smooth(cut-18,cut+18,x))*smooth(156,193,y)*(1-smooth(444,565,y));
+ const pivot=side<0?59:191;
+ const armAxis=pivot+side*7*smooth(180,285,y)+side*3*smooth(285,390,y);
+ const shoulderShift=side*54*(sh-1);
+ const fullness=Math.max(0,(bust-1)*.42+(sh-1)*.16);
+ const armAngle=(y-172)*Math.min(.06,fullness*.20);
+ const armX=armAxis+(x-armAxis)*armW+shoulderShift+side*armAngle*smooth(174,238,y);
+ const finalX=mix(torsoX,armX,armMask);
+ const neckShift=(neck-1)*34;
+ const headY=126+(y-126)*head-neckShift;
+ const neckY=y-neckShift*(1-smooth(124,160,y));
+ const ratioShift=ratio-1;
+ const bodyY=y-ratioShift*82*smooth(222,369,y)+ratioShift*148*smooth(368,717,y);
+ let finalY=mix(headY,neckY,smooth(120,138,y));
+ finalY=mix(finalY,bodyY,smooth(151,185,y));
+ const armY=172+(y-172)*armLen;
+ finalY=mix(finalY,armY,armMask);
+ return [finalX+OX,finalY+OY];
+}
+function rasterTriangle(out,p0,p1,p2,s0,s1,s2,srcImageData=sourcePixels){
+ const x0=p0[0],y0=p0[1],dx1=p1[0]-x0,dy1=p1[1]-y0,dx2=p2[0]-x0,dy2=p2[1]-y0;
+ const det=dx1*dy2-dy1*dx2;
+ if(Math.abs(det)<.1)return;
+ const ax=dy2/det,bx=-dx2/det,ay=-dy1/det,by=dx1/det;
+ const minX=Math.max(0,Math.floor(Math.min(x0,p1[0],p2[0]))),maxX=Math.min(W-1,Math.ceil(Math.max(x0,p1[0],p2[0])));
+ const minY=Math.max(0,Math.floor(Math.min(y0,p1[1],p2[1]))),maxY=Math.min(H-1,Math.ceil(Math.max(y0,p1[1],p2[1])));
+ const src=srcImageData, m=src.data, dst=out.data;
+ for(let py=minY;py<=maxY;py++){
+  let offset=(py*W+minX)*4;
+  for(let px=minX;px<=maxX;px++,offset+=4){
+   const offx=px+.5-x0,offy=py+.5-y0,u=ax*offx+bx*offy,v=ay*offx+by*offy;
+   if(u<-.002||v<-.002||u+v>1.002)continue;
+   const sx=s0[0]+u*(s1[0]-s0[0])+v*(s2[0]-s0[0]);
+   const sy=s0[1]+u*(s1[1]-s0[1])+v*(s2[1]-s0[1]);
+   if(sx<0||sx>=SW||sy<0||sy>=SH)continue;
+   const fx=Math.min(SW-1,sx),fy=Math.min(SH-1,sy);
+   const ix=Math.floor(fx),iy=Math.floor(fy),ix1=Math.min(SW-1,ix+1),iy1=Math.min(SH-1,iy+1),tx=fx-ix,ty=fy-iy;
+   const ids=[(iy*SW+ix)*4,(iy*SW+ix1)*4,(iy1*SW+ix)*4,(iy1*SW+ix1)*4];
+   const ws=[(1-tx)*(1-ty),tx*(1-ty),(1-tx)*ty,tx*ty];
+   let a=0,r=0,g=0,b=0;
+   for(let k=0;k<4;k++){let alp=m[ids[k]+3]*ws[k];a+=alp;r+=m[ids[k]]*alp;g+=m[ids[k]+1]*alp;b+=m[ids[k]+2]*alp;}
+   if(a>.001){dst[offset]=r/a;dst[offset+1]=g/a;dst[offset+2]=b/a;dst[offset+3]=a;}
+  }
+ }
+}
+function renderCPU(p){
+ const ctx=canvas.getContext('2d');ctx.clearRect(0,0,W,H);
+ const unchanged=p.every(n=>Math.abs(n-1)<.00001);
+ drawBackOutfit();drawExpandedPlane('back');
+ if(unchanged){ctx.drawImage(source,OX,OY);return;}
+ const im=ctx.createImageData(W,H),step=7,nx=Math.ceil(SW/step),ny=Math.ceil(SH/step);
+ const coords=[],dst=[];
+ for(let j=0;j<=ny;j++){
+  const sy=Math.min(SH,j*step),sc=[],dt=[];
+  for(let i=0;i<=nx;i++){const sx=Math.min(SW,i*step);sc.push([sx,sy]);dt.push(texturePoint(sx,sy,p));}
+  coords.push(sc);dst.push(dt);
+ }
+ for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){
+  rasterTriangle(im,dst[j][i],dst[j][i+1],dst[j+1][i],coords[j][i],coords[j][i+1],coords[j+1][i]);
+  rasterTriangle(im,dst[j+1][i+1],dst[j+1][i],dst[j][i+1],coords[j+1][i+1],coords[j+1][i],coords[j][i+1]);
+ }
+ const baseCanvas=document.createElement('canvas');baseCanvas.width=W;baseCanvas.height=H;
+ baseCanvas.getContext('2d').putImageData(im,0,0);
+ ctx.drawImage(baseCanvas,0,0);
+}
+function render(){queued=false;if(!ready)return;canvasSize();if(fallback){renderCPU(values());applySkinTone();drawOutfit();paintEyes();return;}gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.useProgram(program);gl.uniform1fv(uniforms.p,new Float32Array(values()));gl.uniform4f(uniforms.frame,OX,OY,W,H);gl.drawArrays(gl.TRIANGLE_STRIP,0,gl.meshCount);const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);drawBackOutfit();ctx.drawImage(glSurface,0,0);applySkinTone();drawOutfit();paintEyes()}
+
+function hexToRgb(hex){const m=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);return m?{r:parseInt(m[1],16),g:parseInt(m[2],16),b:parseInt(m[3],16)}:null}
+function applySkinTone(){
+ const {color,active,strength}=skinConfig();
+ if(!active || strength<=0) return;
+ const rgb=hexToRgb(color);if(!rgb)return;
+ const ctx=canvas.getContext('2d',{willReadFrequently:true}), w=canvas.width,h=canvas.height;
+ if(!w||!h)return;
+ const img=ctx.getImageData(0,0,w,h),d=img.data;
+ // Base skin reference is sampled from original image (#FCE3CF).
+ // Ratio-based color remapping retains each pixel's local shaded brightness
+ // and leaves the original contour strokes nearly untouched.
+ const reference=[252,227,207], target=[rgb.r,rgb.g,rgb.b],s=strength;
+ for(let i=0;i<d.length;i+=4){
+   const a=d[i+3];if(a<8)continue;
+   const r=d[i],g=d[i+1],b=d[i+2];
+   const lum=.27*r+.60*g+.13*b;
+   const lineWeight=smooth(52,157,lum);
+   const weight=s*lineWeight;
+   if(weight<.001)continue;
+   d[i]=Math.max(0,Math.min(255,r + weight*r*(target[0]-reference[0])/reference[0]));
+   d[i+1]=Math.max(0,Math.min(255,g + weight*g*(target[1]-reference[1])/reference[1]));
+   d[i+2]=Math.max(0,Math.min(255,b + weight*b*(target[2]-reference[2])/reference[2]));
+ }
+ ctx.putImageData(img,0,0);
+}
+function clamp01(n){return Math.max(0,Math.min(1,n))}
+function hsvToRgb(h,s,v){
+ h=((h%360)+360)%360;
+ const f=n=>{const k=(n+h/60)%6;return Math.round(255*(v-v*s*Math.max(Math.min(k,4-k,1),0)))};
+ return [f(5),f(3),f(1)];
+}
+function rgbToHsv(r,g,b){
+ r/=255;g/=255;b/=255;
+ const max=Math.max(r,g,b),min=Math.min(r,g,b),diff=max-min;
+ let h=0;if(diff){switch(max){case r:h=((g-b)/diff)%6;break;case g:h=(b-r)/diff+2;break;default:h=(r-g)/diff+4;}h*=60;if(h<0)h+=360;}
+ return {h,s:max===0?0:diff/max,v:max};
+}
+function rgbHex(rgb){return '#'+rgb.map(n=>Math.round(n).toString(16).padStart(2,'0')).join('').toUpperCase()}
+function paintPalette(){
+ const ctx=paletteCanvas.getContext('2d'),w=paletteCanvas.width,h=paletteCanvas.height;
+ const rgb=hsvToRgb(hsv.h,1,1);
+ ctx.clearRect(0,0,w,h);ctx.fillStyle='rgb('+rgb.join(',')+')';ctx.fillRect(0,0,w,h);
+ const hor=ctx.createLinearGradient(0,0,w,0);hor.addColorStop(0,'#fff');hor.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=hor;ctx.fillRect(0,0,w,h);
+ const vert=ctx.createLinearGradient(0,0,0,h);vert.addColorStop(0,'rgba(0,0,0,0)');vert.addColorStop(1,'#000');ctx.fillStyle=vert;ctx.fillRect(0,0,w,h);
+ paletteCursor.style.left=(hsv.s*100)+'%';paletteCursor.style.top=((1-hsv.v)*100)+'%';
+}
+function showToneState(){
+ tonePreview.style.background=skinColor;
+ skinHex.value=skinColor;nativeColor.value=skinColor.toLowerCase();hueBar.value=String(Math.round(hsv.h));
+ skinStatus.textContent=skinSelected?'선택한 피부톤 적용 중':'원본 피부톤 적용 중';
+ paintPalette();
+}
+function choosePalette(){
+ skinColor=rgbHex(hsvToRgb(hsv.h,hsv.s,hsv.v));skinSelected=true;
+ showToneState();queue();
+}
+function syncFromHex(hex){
+ const rgb=hexToRgb(hex);if(!rgb)return false;
+ hsv=rgbToHsv(rgb.r,rgb.g,rgb.b);skinColor=rgbHex([rgb.r,rgb.g,rgb.b]);
+ skinSelected=true;showToneState();queue();return true;
+}
+function handlePalettePointer(e){
+ const rect=paletteHolder.getBoundingClientRect();
+ hsv.s=clamp01((e.clientX-rect.left)/rect.width);
+ hsv.v=1-clamp01((e.clientY-rect.top)/rect.height);
+ choosePalette();
+}
+paletteHolder.addEventListener('pointerdown',e=>{e.preventDefault();paletteHolder.setPointerCapture(e.pointerId);handlePalettePointer(e)});
+paletteHolder.addEventListener('pointermove',e=>{if(paletteHolder.hasPointerCapture(e.pointerId))handlePalettePointer(e)});
+paletteHolder.addEventListener('pointerup',e=>{if(paletteHolder.hasPointerCapture(e.pointerId))paletteHolder.releasePointerCapture(e.pointerId)});
+hueBar.addEventListener('input',()=>{hsv.h=Number(hueBar.value);choosePalette()});
+skinHex.addEventListener('change',()=>{if(!syncFromHex(skinHex.value))skinHex.value=skinColor});
+nativeColor.addEventListener('input',()=>syncFromHex(nativeColor.value));
+$('originalSkin').addEventListener('click',()=>{skinSelected=false;skinColor=skinColorDefault;hsv=rgbToHsv(252,227,207);showToneState();queue()});
+function showPanel(name){
+ for(const tab of ['body','skin','face','hair']){
+  const active=tab===name;
+  $('tab-'+tab).setAttribute('aria-selected',String(active));
+  $('tab-'+tab).classList.toggle('active',active);
+  $('tab-'+tab).tabIndex=active?0:-1;
+  $('panel-'+tab).hidden=!active;
+ }
+ $('leftScroll').scrollTop=0;
+}
+for(const tab of ['body','skin','face','hair']){
+ const b=$('tab-'+tab);
+ b.addEventListener('click',()=>showPanel(tab));
+ b.addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
+   e.preventDefault();const names=['body','skin','face','hair'];const other=names[(names.indexOf(tab)+(e.key==='ArrowRight'?1:names.length-1))%names.length];showPanel(other);$('tab-'+other).focus();
+  }
+ });
+}
+showToneState();
+// Both fabric and coverage correction follow precisely the same body-deformation mesh.
+function warpGarmentPixels(p,pixels){
+ const im=canvas.getContext('2d').createImageData(W,H),step=6,nx=Math.ceil(SW/step),ny=Math.ceil(SH/step);
+ const coords=[],dst=[];
+ for(let j=0;j<=ny;j++){
+  const sy=Math.min(SH,j*step),sc=[],dt=[];
+  for(let i=0;i<=nx;i++){const sx=Math.min(SW,i*step);sc.push([sx,sy]);dt.push(texturePoint(sx,sy,p));}
+  coords.push(sc);dst.push(dt);
+ }
+ for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){
+  rasterTriangle(im,dst[j][i],dst[j][i+1],dst[j+1][i],coords[j][i],coords[j][i+1],coords[j+1][i],pixels);
+  rasterTriangle(im,dst[j+1][i+1],dst[j+1][i],dst[j][i+1],coords[j+1][i+1],coords[j+1][i],coords[j][i+1],pixels);
+ }
+ const off=document.createElement('canvas');off.width=W;off.height=H;
+ off.getContext('2d').putImageData(im,0,0);
+ return off;
+}
+function drawBackOutfit(){
+ if(!backOutfitPixels||Object.values(selectedLayers).every(v=>v==='none'))return;
+ const ctx=canvas.getContext('2d'),p=values();
+ const unchanged=p.every(n=>Math.abs(n-1)<.00001);
+ if(unchanged)ctx.drawImage(backOutfitSource,OX*dpr,OY*dpr,SW*dpr,SH*dpr);
+ else ctx.drawImage(warpGarmentPixels(p,backOutfitPixels),0,0,canvas.width,canvas.height);
+}
+function drawOutfit(){
+ if(!outfitPixels||Object.values(selectedLayers).every(v=>v==='none'))return;
+ const ctx=canvas.getContext('2d'),p=values();
+ const unchanged=p.every(n=>Math.abs(n-1)<.00001);
+ if(selectedLayers.upper==='whiteShirt' && erasePixels){
+  ctx.save();ctx.globalCompositeOperation='destination-out';
+  if(unchanged)ctx.drawImage(eraseSource,OX*dpr,OY*dpr,SW*dpr,SH*dpr);
+  else ctx.drawImage(warpGarmentPixels(p,erasePixels),0,0,canvas.width,canvas.height);
+  ctx.restore();
+ }
+ if(unchanged)ctx.drawImage(outfitSource,OX*dpr,OY*dpr,SW*dpr,SH*dpr);
+ else ctx.drawImage(warpGarmentPixels(p,outfitPixels),0,0,canvas.width,canvas.height);
+}
+const categoryIcons={upper:'♜',top:'◇',vest:'◈',outer:'◇',skirt:'▱',lower:'▥',socks:'▯',shoes:'♧',neck:'♢',waistAccessory:'⊹'};
+const categoryTypes={upper:'upper',top:'upper',vest:'upper',outer:'upper',skirt:'lower',lower:'lower',socks:'lower',shoes:'lower',neck:'accessory',waistAccessory:'accessory'};
+let activeColorPart='upper';
+let activeCategoryFilter='all';
+const thumbCache={};
+function buildWardrobeUI(){
+ const holder=$('wardrobeGroups');
+ holder.innerHTML=wardrobeLayers.map(g=>{
+  const cards=g.items.map(([id,label])=>`<button type="button" class="garment-card" data-layer="${g.id}" data-item="${id}" aria-label="${label}" aria-pressed="false"><span class="garment-preview">${id==='none'?'<span class="garment-none">∅</span>':'<img data-thumb="'+id+'" alt="" />'}</span></button>`).join('');
+  return `<section class="wardrobe-group" data-group="${g.id}" data-type="${categoryTypes[g.id]}"><div class="wardrobe-title"><h3><span>${categoryIcons[g.id]}</span>${g.label}</h3><button class="swatch-button" type="button" data-color-pick="${g.id}" aria-label="${g.label} 색상 편집" title="색상 편집"></button></div><div class="cloth-grid">${cards}</div></section>`;
+ }).join('');
+ holder.querySelectorAll('[data-layer]').forEach(btn=>btn.addEventListener('click',()=>{
+  selectedLayers[btn.dataset.layer]=btn.dataset.item;
+  if(btn.dataset.item!=='none')activeColorPart=btn.dataset.layer;
+  syncWardrobeUI();composeOutfitSource();queue();
+ }));
+ holder.querySelectorAll('[data-color-pick]').forEach(btn=>btn.addEventListener('click',()=>{
+  activeColorPart=btn.dataset.colorPick;
+  const chosen=selectedLayers[activeColorPart];
+  if(chosen==='none')return;
+  refreshQuickColor();
+  $('colorEditor').scrollIntoView({behavior:'smooth',block:'nearest'});
+ }));
+
+
+
+ if(window.__dressLabWardrobeControlsBound)return;
+ window.__dressLabWardrobeControlsBound=true;
+ $('removeAllOutfit').addEventListener('click',()=>{for(const id in selectedLayers)selectedLayers[id]='none';syncWardrobeUI();composeOutfitSource();queue()});
+ $('quickColorTarget').addEventListener('change',e=>{activeColorPart=e.target.value;refreshQuickColor()});
+ for(const [id,field] of [['quickHue','h'],['quickSat','s'],['quickVal','v']]){
+  $(id).addEventListener('input',e=>updateGarmentFromSliders(activeColorPart,field,e.target.value));
+ }
+ $('quickColorReset').addEventListener('click',()=>resetGarmentColor(activeColorPart));
+ $('jumpWardrobe').addEventListener('click',()=>$('rightScroll').scrollTo({top:0,behavior:'smooth'}));
+ document.querySelectorAll('[data-filter]').forEach(btn=>btn.addEventListener('click',()=>filterWardrobe(btn.dataset.filter)));
+}
+function filterWardrobe(filter){
+ activeCategoryFilter=filter;
+ document.querySelectorAll('[data-filter]').forEach(btn=>{const on=btn.dataset.filter===filter;btn.classList.toggle('active',on);btn.setAttribute('aria-pressed',String(on))});
+ document.querySelectorAll('.wardrobe-group').forEach(el=>{el.hidden=filter!=='all'&&el.dataset.type!==filter});
+ $('rightScroll').scrollTop=0;
+}
+function syncWardrobeUI(){
+ updateWardrobeViewport();
+ document.querySelectorAll('.garment-card').forEach(btn=>{
+  const yes=selectedLayers[btn.dataset.layer]===btn.dataset.item;
+  btn.classList.toggle('selected',yes);btn.setAttribute('aria-pressed',String(yes));
+ });
+ document.querySelectorAll('[data-color-pick]').forEach(btn=>{
+  const item=selectedLayers[btn.dataset.colorPick];
+  btn.disabled=item==='none';
+  btn.style.backgroundColor=item==='none'?'#e8ebf0':(garmentColors[item]||'#999');
+ });
+ $('selectionCount').textContent=Object.values(selectedLayers).filter(v=>v!=='none').length+' 착용';
+ refreshQuickColor();
+}
+function refreshQuickColor(){
+ const choices=wardrobeLayers.filter(g=>selectedLayers[g.id]!=='none');
+ const sel=$('quickColorTarget');
+ if(!choices.some(g=>g.id===activeColorPart))activeColorPart=(choices[0]||{}).id||'upper';
+ sel.innerHTML=choices.map(g=>`<option value="${g.id}">${g.label}</option>`).join('');
+ const enabled=choices.length>0;
+ sel.disabled=!enabled;
+ ['quickHue','quickSat','quickVal','quickColorReset'].forEach(k=>$(k).disabled=!enabled);
+ if(!enabled){$('quickColorSwatch').style.background='#d4dbe6';return;}
+ sel.value=activeColorPart;
+ const item=selectedLayers[activeColorPart];
+ const color=garmentColors[item]||originalGarmentColors[item]||'#808080';
+ const rgb=hexToRgb(color),state=rgbToHsv(rgb.r,rgb.g,rgb.b);
+ layerColorHSV[activeColorPart]=state;
+ $('quickColorSwatch').style.backgroundColor=color;
+ $('quickHue').value=Math.round(state.h);$('quickSat').value=Math.round(state.s*100);$('quickVal').value=Math.round(state.v*100);
+ $('quickHueVal').textContent=Math.round(state.h)+'°';
+ $('quickSatVal').textContent=Math.round(state.s*100)+'%';
+ $('quickValVal').textContent=Math.round(state.v*100)+'%';
+ const faded='rgb('+hsvToRgb(state.h,0,state.v).join(',')+')';
+ const intense='rgb('+hsvToRgb(state.h,1,state.v).join(',')+')';
+ $('quickSat').style.background='linear-gradient(90deg,'+faded+','+intense+')';
+ $('quickVal').style.background='linear-gradient(90deg,#24324b,'+intense+')';
+}
+function renderWardrobeThumbnails(){
+ for(const g of wardrobeLayers){for(const [id] of g.items){
+  if(id==='none'||thumbCache[id])continue;
+  const keys=imageGroup[id]||[id];
+  const fmt=DRESS_LAB_CANVAS_FORMATS[DRESS_LAB_EXTERNAL_ITEMS.get(id)?.canvas||'standard'];
+   const iw=fmt.width,ih=fmt.height;
+   const off=document.createElement('canvas');off.width=iw;off.height=ih;
+  const ctx=off.getContext('2d',{willReadFrequently:true});
+  keys.forEach(key=>{if(outfitImages[key])ctx.drawImage(outfitImages[key],0,0,iw,ih)});
+  const pixels=ctx.getImageData(0,0,iw,ih).data;
+  let x0=iw,y0=ih,x1=0,y1=0;
+  for(let y=0;y<ih;y+=2)for(let x=0;x<iw;x+=2){if(pixels[(y*iw+x)*4+3]>45){x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y)}}
+  if(x0>x1||y0>y1)continue;
+  const w=x1-x0+2,h=y1-y0+2,margin=4;
+  const icon=document.createElement('canvas');icon.width=100;icon.height=100;
+  const c=icon.getContext('2d');const scale=Math.min(92/w,92/h);
+  c.drawImage(off,Math.max(0,x0-margin),Math.max(0,y0-margin),Math.min(iw,w+margin*2),Math.min(ih,h+margin*2),
+   (100-(w+margin*2)*scale)/2,(100-(h+margin*2)*scale)/2,(w+margin*2)*scale,(h+margin*2)*scale);
+  thumbCache[id]=icon.toDataURL('image/png');
+ }}
+ document.querySelectorAll('img[data-thumb]').forEach(img=>{const src=thumbCache[img.dataset.thumb];if(src)img.src=src});
+}
+function updateGarmentFromSliders(part,field,value){
+ const item=selectedLayers[part];if(item==='none')return;
+ const state=layerColorHSV[part];state[field]=field==='h'?Number(value):Number(value)/100;
+ garmentColors[item]=rgbHex(hsvToRgb(state.h,state.s,state.v));
+ syncWardrobeUI();composeOutfitSource();queue();
+}
+function resetGarmentColor(part){
+ const item=selectedLayers[part];if(item==='none')return;
+ garmentColors[item]=originalGarmentColors[item];
+ syncWardrobeUI();composeOutfitSource();queue();
+}
+function queue(){if(!queued){queued=true;requestAnimationFrame(render)}}
+function progress(inp){const a=+inp.min,b=+inp.max,v=+inp.value;inp.closest('.control').querySelector('output').textContent=v+'%';inp.style.setProperty('--fill',100*(v-a)/(b-a)+'%')}
+ID.forEach(k=>{if(input[k]&&input[k].type==='range')progress(input[k]);if(input[k])input[k].addEventListener('input',()=>{if(input[k].type==='range')progress(input[k]);queue()})});
+buildWardrobeUI();
+syncWardrobeUI();
+$('reset').addEventListener('click',()=>{
+ ID.forEach(k=>{if(!input[k])return;input[k].value=100;if(input[k].type==='range')progress(input[k]);});
+ Object.assign(selectedLayers,emptyOutfitDefault);
+ Object.assign(garmentColors,originalGarmentColors);
+ composeOutfitSource();syncWardrobeUI();
+ skinSelected=false;skinColor=skinColorDefault;hsv=rgbToHsv(252,227,207);showToneState();blinkFrame=0;gazeState.targetX=0;gazeState.currentX=0;gazeState.velocityX=0;gazeState.targetY=0;gazeState.currentY=0;gazeState.velocityY=0;gazeState.highlightX=0;gazeState.highlightVelocityX=0;gazeState.highlightY=0;gazeState.highlightVelocityY=0;gazeState.highlightFollowY=0;gazeState.highlightFollowVelocityY=0;gazeState.boing=0;gazeState.active=false;gazeState.irisHistory.length=0;setIrisColor('original');queue();
+});
+$('save').addEventListener('click',()=>{if(!ready)return;render();const save=document.createElement('canvas');save.width=canvas.width;save.height=canvas.height;const c=save.getContext('2d');c.clearRect(0,0,save.width,save.height);c.drawImage(canvas,0,0);save.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='체형_비율_편집.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)},'image/png')});
+Promise.all([paintSource(),loadOutfitSources(),loadExternalWardrobe()]).then(()=>{
+ try{initGL()}catch(err){console.warn('Canvas 2D로 렌더링:',err);gl=null;fallback=true;sourcePixels=imgctx.getImageData(0,0,SW,SH);}
+ ready=true;renderWardrobeThumbnails();queue();
+}).catch(err=>{console.error(err);const ctx=canvas.getContext('2d');if(ctx){ctx.fillStyle='#6b7280';ctx.font='13px sans-serif';ctx.fillText('이미지를 표시할 수 없다: '+err.message,20,32)}});
+
+// Compact-screen UI bindings; the original character and outfit engines are unchanged.
+$('resetBody').addEventListener('click',()=>{
+ SHAPE_ID.forEach(k=>{input[k].value=100;progress(input[k])});queue();
+});
+document.querySelectorAll('[data-skin]').forEach(btn=>btn.addEventListener('click',()=>{
+ syncFromHex(btn.dataset.skin);
+ document.querySelectorAll('[data-skin]').forEach(el=>el.classList.toggle('chosen',el===btn));
+}));
+$('randomLook').addEventListener('click',()=>{
+ const pick=arr=>arr[Math.floor(Math.random()*arr.length)];
+ const top=pick(['blackTurtleneck','ivoryBlouse','whiteShirt','shirt']);
+ const bottom=pick(['blackSlacks','pants','plaidSkirt']);
+ Object.assign(selectedLayers,{upper:['blackTurtleneck','ivoryBlouse','whiteShirt','shirt'].includes(top)?top:'none',top:['blackTankTop','blackCamiTop','blackHalterTop','blackTubeTop'].includes(top)?top:'none',vest:Math.random()<.18?'brownVest':'none',outer:Math.random()<.37?'blackCoat':'none',
+  skirt:bottom==='plaidSkirt'?bottom:'none',lower:bottom==='plaidSkirt'?'none':bottom,
+  socks:Math.random()<.25?'brownSocks':'none',shoes:Math.random()<.35?'brownLoafers':'none',
+  neck:pick(['none','none','silverNecklace','neckRibbon']),waistAccessory:Math.random()<.24?'silverWaistChain':'none'});
+ syncWardrobeUI();composeOutfitSource();queue();
+});
+filterWardrobe('all');
+
+</script>
+<script>
+(()=>{
+ const FACE_FEATURE_SOURCES={'nose':'assets/legacy/sprite-044.png', 'mouthNeutral':'assets/legacy/sprite-045.png', 'mouthSmile':'assets/legacy/sprite-046.png', 'mouthLaugh':'assets/legacy/sprite-047.png', 'mouthSurprise':'assets/legacy/sprite-048.png', 'mouthPout':'assets/legacy/sprite-049.png', 'blush':'assets/legacy/sprite-050.png'};
+ const featureStyle=document.createElement('style');
+ featureStyle.textContent=`
+ .expression-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:8px 0 10px}
+ .expression-choice{min-width:0;padding:7px 3px;border:1px solid #e4eaf3;border-radius:11px;background:#f8faff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:10px;font-weight:700;color:#5b6b83}
+ .expression-choice.selected{background:#edf6ff;border-color:#5496eb;box-shadow:0 0 0 1px #5496eb inset;color:#3272b8}
+ .expression-icon{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#fff;border:1px solid #dbe4f0;color:#556b86;font-size:14px;line-height:1;box-shadow:0 1px 2px #00000010}
+ .expression-choice.selected .expression-icon{border-color:#9dc7ff;background:#ffffff}
+ @media(max-width:860px){.expression-grid{gap:3px}.expression-choice{padding:5px 1px;font-size:8px;border-radius:7px}.expression-icon{width:19px;height:19px;font-size:11px}}
+ `;
+ document.head.appendChild(featureStyle);
+ const facePanel=document.getElementById('panel-face');
+ if(facePanel&&!document.getElementById('expressionOptions')){
+   const eyeGroup=facePanel.querySelector('.group');
+   const group=document.createElement('div');
+   group.className='group';
+   group.innerHTML=`<h3>표정</h3>
+   <div class="expression-grid" id="expressionOptions" role="group" aria-label="표정 선택">
+    <button type="button" class="expression-choice selected" data-expression="neutral" aria-pressed="true"><span class="expression-icon">─</span><span>기본</span></button>
+    <button type="button" class="expression-choice" data-expression="smile" aria-pressed="false"><span class="expression-icon">◠</span><span>미소</span></button>
+    <button type="button" class="expression-choice" data-expression="laugh" aria-pressed="false"><span class="expression-icon">▿</span><span>웃음</span></button>
+    <button type="button" class="expression-choice" data-expression="surprise" aria-pressed="false"><span class="expression-icon">○</span><span>놀람</span></button>
+    <button type="button" class="expression-choice" data-expression="pout" aria-pressed="false"><span class="expression-icon">︵</span><span>삐짐</span></button>
+   </div>
+   <p class="state-note">코와 홍조, 입이 함께 표시된다. 시선이 움직일 때 코와 입도 아주 조금 늦게 따라오며 보잉한다. 표정 전환도 부드럽게 이어진다.</p>`;
+   if(eyeGroup) eyeGroup.insertAdjacentElement('afterend',group); else facePanel.prepend(group);
+ }
+ const faceImages={};
+ Object.entries(FACE_FEATURE_SOURCES).forEach(([key,src])=>{
+   const img=new Image(); img.src=src; faceImages[key]=img; img.addEventListener('load',()=>{ if(typeof queue==='function') queue(); });
+ });
+ const FACE_FEATURE_ANCHOR={x:124.5,y:126};
+ const FACE_FEATURE_PIVOT={x:124.5,y:114};
+ const FACE_EXPRESSIONS={
+   neutral:{label:'기본',mouth:'mouthNeutral',blush:0.56},
+   smile:{label:'미소',mouth:'mouthSmile',blush:0.72},
+   laugh:{label:'웃음',mouth:'mouthLaugh',blush:0.88},
+   surprise:{label:'놀람',mouth:'mouthSurprise',blush:0.42},
+   pout:{label:'삐짐',mouth:'mouthPout',blush:0.50}
+ };
+ const faceExpressionState={current:'neutral',previous:'neutral',startedAt:(performance.now?performance.now():Date.now()),duration:420,boing:0,active:false,lastTs:0,
+   noseX:0,noseVX:0,mouthX:0,mouthVX:0};
+ function clampFeature(v,lo,hi){return Math.min(hi,Math.max(lo,v));}
+ function faceProgress(now){
+   if(faceExpressionState.previous===faceExpressionState.current) return 1;
+   return clampFeature((now-faceExpressionState.startedAt)/faceExpressionState.duration,0,1);
+ }
+ function syncExpressionUI(){
+   document.querySelectorAll('#expressionOptions [data-expression]').forEach(btn=>{
+     const active=btn.dataset.expression===faceExpressionState.current;
+     btn.classList.toggle('selected',active); btn.setAttribute('aria-pressed',String(active));
+   });
+ }
+ function startFaceFeatureAnimation(){
+   if(faceExpressionState.active) return;
+   faceExpressionState.active=true; faceExpressionState.lastTs=0; requestAnimationFrame(stepFaceFeatureAnimation);
+ }
+ function triggerFaceFeatureBoing(strength=1){
+   faceExpressionState.boing=Math.max(faceExpressionState.boing,strength); startFaceFeatureAnimation();
+ }
+ function stepFaceFeatureAnimation(ts){
+   if(!faceExpressionState.active) return;
+   if(!faceExpressionState.lastTs) faceExpressionState.lastTs=ts;
+   const dt=clampFeature((ts-faceExpressionState.lastTs)/16.667,.5,2.4);
+   faceExpressionState.lastTs=ts;
+   faceExpressionState.boing*=Math.pow(.88,dt);
+   if(faceExpressionState.boing<.015) faceExpressionState.boing=0;
+   // Eyes lead. Nose and mouth trail their horizontal movement with a tiny
+   // damped spring in the same 252px doll-space, independent of head scaling.
+   const pupilX=(typeof gazeState!=='undefined')?gazeState.currentX:0;
+   const noseTarget=clampFeature(pupilX*.16,-1.15,1.15);
+   const mouthTarget=clampFeature(pupilX*.29,-2.0,2.0);
+   function springStep(xKey,vKey,target,pull,friction){
+     faceExpressionState[vKey]+=(target-faceExpressionState[xKey])*pull*dt;
+     faceExpressionState[vKey]*=Math.pow(friction,dt);
+     faceExpressionState[xKey]+=faceExpressionState[vKey]*dt;
+   }
+   springStep('noseX','noseVX',noseTarget,.105,.76);
+   springStep('mouthX','mouthVX',mouthTarget,.16,.74);
+   const gazeMoving=Math.abs(faceExpressionState.noseX-noseTarget)>.012||
+     Math.abs(faceExpressionState.noseVX)>.012||
+     Math.abs(faceExpressionState.mouthX-mouthTarget)>.012||
+     Math.abs(faceExpressionState.mouthVX)>.012;
+   const moving=faceExpressionState.boing>0||faceProgress(ts)<1||gazeMoving;
+   if(moving){ if(typeof queue==='function') queue(); requestAnimationFrame(stepFaceFeatureAnimation); return; }
+   faceExpressionState.noseX=noseTarget;faceExpressionState.mouthX=mouthTarget;
+   faceExpressionState.noseVX=0;faceExpressionState.mouthVX=0;
+   faceExpressionState.active=false; if(typeof queue==='function') queue();
+ }
+ function setFaceExpression(key){
+   if(!FACE_EXPRESSIONS[key]) return;
+   const now=performance.now?performance.now():Date.now();
+   if(faceExpressionState.current!==key){
+     faceExpressionState.previous=faceExpressionState.current;
+     faceExpressionState.current=key;
+     faceExpressionState.startedAt=now;
+   }else if(faceProgress(now)>=1){
+     faceExpressionState.previous=key;
+     faceExpressionState.startedAt=now-faceExpressionState.duration;
+   }
+   syncExpressionUI(); triggerFaceFeatureBoing(1.08); if(typeof queue==='function') queue();
+ }
+ window.setFaceExpression=setFaceExpression;
+ document.querySelectorAll('#expressionOptions [data-expression]').forEach(btn=>btn.addEventListener('click',()=>setFaceExpression(btn.dataset.expression)));
+ document.querySelector('.canvas-bed')?.addEventListener('pointerdown',()=>triggerFaceFeatureBoing(.36));
+ document.getElementById('reset')?.addEventListener('click',()=>{
+   faceExpressionState.current='neutral'; faceExpressionState.previous='neutral'; faceExpressionState.startedAt=(performance.now?performance.now():Date.now())-faceExpressionState.duration;
+   faceExpressionState.boing=0; faceExpressionState.active=false;
+   faceExpressionState.noseX=0;faceExpressionState.noseVX=0;
+   faceExpressionState.mouthX=0;faceExpressionState.mouthVX=0;
+   syncExpressionUI();
+ });
+ function paintFaceFeatures(){
+   if(!faceImages.nose?.complete||!faceImages.blush?.complete) return;
+   const currentDef=FACE_EXPRESSIONS[faceExpressionState.current]||FACE_EXPRESSIONS.neutral;
+   const previousDef=FACE_EXPRESSIONS[faceExpressionState.previous]||currentDef;
+   const currentMouth=faceImages[currentDef.mouth];
+   const previousMouth=faceImages[previousDef.mouth];
+   if(!currentMouth?.complete) return;
+   const now=performance.now?performance.now():Date.now();
+   const raw=faceProgress(now);
+   const t=(typeof smooth==='function')?smooth(0,1,raw):(raw*raw*(3-2*raw));
+   const same=faceExpressionState.previous===faceExpressionState.current;
+   const transitioning=!same&&raw<1;
+   const prevAlpha=same?0:1-t;
+   const nextAlpha=same?1:t;
+   const blushOpacity=(same?currentDef.blush:(previousDef.blush+(currentDef.blush-previousDef.blush)*t));
+   const faceWobble=Math.sin(now*0.029)*faceExpressionState.boing;
+   const mouthWobble=Math.sin(now*0.037+0.65)*faceExpressionState.boing;
+   const faceScaleX=1+faceWobble*0.07;
+   const faceScaleY=1-faceWobble*0.055;
+   const faceLift=faceWobble*1.35;
+   const p=values();
+   const anchor=texturePoint(FACE_FEATURE_ANCHOR.x,FACE_FEATURE_ANCHOR.y,p);
+   const head=p[0];
+   const ctx=canvas.getContext('2d');
+   const mouthPivot={x:124.5,y:114};
+   function drawMouthLayer(img,alpha,progress,direction){
+     if(!img?.complete||alpha<=0.001)return;
+     const shiftY=(1-progress)*direction*3.2;
+     const shiftX=(1-progress)*direction*1.0;
+     const scaleBase=0.92+0.08*progress;
+     const mouthScaleX=scaleBase*(1+mouthWobble*0.12);
+     const mouthScaleY=(0.94+0.06*progress)*(1-mouthWobble*0.09);
+     ctx.save();
+     ctx.translate((mouthPivot.x+shiftX+faceExpressionState.mouthX)*dpr,(mouthPivot.y+shiftY)*dpr);
+     ctx.scale(mouthScaleX,mouthScaleY);
+     ctx.translate(-mouthPivot.x*dpr,-mouthPivot.y*dpr);
+     ctx.globalAlpha=alpha;
+     ctx.drawImage(img,0,0,SW*dpr,SH*dpr);
+     ctx.restore();
+   }
+   ctx.save();
+   ctx.translate(anchor[0]*dpr,anchor[1]*dpr+faceLift*dpr);
+   ctx.scale(head,head);
+   ctx.translate(-FACE_FEATURE_ANCHOR.x*dpr,-FACE_FEATURE_ANCHOR.y*dpr);
+   ctx.translate(FACE_FEATURE_PIVOT.x*dpr,FACE_FEATURE_PIVOT.y*dpr);
+   ctx.scale(faceScaleX,faceScaleY);
+   ctx.translate(-FACE_FEATURE_PIVOT.x*dpr,-FACE_FEATURE_PIVOT.y*dpr);
+   ctx.globalAlpha=clampFeature(blushOpacity,0,1);
+   ctx.drawImage(faceImages.blush,0,0,SW*dpr,SH*dpr);
+   ctx.globalAlpha=1;
+   ctx.save();
+   ctx.translate(faceExpressionState.noseX*dpr,0);
+   ctx.drawImage(faceImages.nose,0,0,SW*dpr,SH*dpr);
+   ctx.restore();
+   if(transitioning){
+     drawMouthLayer(previousMouth,prevAlpha,1-t,-1);
+     drawMouthLayer(currentMouth,nextAlpha,t,1);
+   }else{
+     drawMouthLayer(currentMouth,1,1,0);
+   }
+   ctx.restore();
+   ctx.globalAlpha=1;
+ }
+
+ // Embedded 252x730 PNG, registered independently from clothing and facial sprites.
+ const HAIR_STYLES={softBrown:{label:'미디엄 헤어',src:'assets/legacy/sprite-051.png'}};
+ const hairSprite=new Image();
+ hairSprite.decoding='async';
+ const hairMotion={style:'softBrown',enabled:true,strength:45,lastFrame:0,frame:0};
+ const hairFrameCanvas=document.createElement('canvas');
+ hairFrameCanvas.width=SW;hairFrameCanvas.height=170;
+ const hairFrameCtx=hairFrameCanvas.getContext('2d');
+ const hairPreview=document.getElementById('hairStylePreview');
+ function refreshHairThumbnail(image){
+   if(!hairPreview)return;
+   const previewCanvas=document.createElement('canvas');
+   previewCanvas.width=144;previewCanvas.height=168;
+   const previewCtx=previewCanvas.getContext('2d');
+   previewCtx.drawImage(image,54,6,144,168,0,0,144,168);
+   hairPreview.src=previewCanvas.toDataURL('image/png');
+ }
+ hairSprite.addEventListener('load',()=>{refreshHairThumbnail(hairSprite);queue();});
+ hairSprite.src=HAIR_STYLES.softBrown.src;
+ const hairSwayControl=$('hairSwayStrength');
+ const hairSwayToggle=$('hairSwayEnabled');
+ const hairSwayLabel=$('hairSwayOutput');
+ function syncHairUI(){
+   document.querySelectorAll('#hairStyleOptions [data-hair]').forEach(btn=>{
+     const active=btn.dataset.hair===hairMotion.style;
+     btn.classList.toggle('selected',active);
+     btn.setAttribute('aria-pressed',String(active));
+   });
+   hairSwayControl.disabled=hairMotion.style==='none'||!hairMotion.enabled;
+   hairSwayLabel.textContent=hairMotion.strength+'%';
+   hairSwayControl.value=String(hairMotion.strength);
+   hairSwayControl.style.setProperty('--fill',hairMotion.strength+'%');
+   hairSwayToggle.checked=hairMotion.enabled;
+ }
+ function scheduleHairRedraw(ts){
+   // Limiting standalone hair animation to about 24fps keeps phone GPUs usable.
+   if(document.hidden || hairMotion.style==='none' || !hairMotion.enabled || hairMotion.strength<=0){
+     hairMotion.frame=0;hairMotion.lastFrame=0;return;
+   }
+   if(ts-hairMotion.lastFrame>=42){hairMotion.lastFrame=ts;queue();}
+   hairMotion.frame=requestAnimationFrame(scheduleHairRedraw);
+ }
+ function ensureHairAnimation(){
+   if(hairMotion.frame){cancelAnimationFrame(hairMotion.frame);hairMotion.frame=0;}
+   hairMotion.lastFrame=0;
+   if(hairMotion.style!=='none'&&hairMotion.enabled&&hairMotion.strength>0&&!document.hidden)
+      hairMotion.frame=requestAnimationFrame(scheduleHairRedraw);
+   queue();
+ }
+ document.addEventListener('visibilitychange',ensureHairAnimation);
+ document.querySelectorAll('#hairStyleOptions [data-hair]').forEach(btn=>btn.addEventListener('click',()=>{
+   hairMotion.style=btn.dataset.hair;
+   syncHairUI();ensureHairAnimation();
+ }));
+ hairSwayToggle.addEventListener('change',()=>{hairMotion.enabled=hairSwayToggle.checked;syncHairUI();ensureHairAnimation();});
+ hairSwayControl.addEventListener('input',()=>{
+   hairMotion.strength=Number(hairSwayControl.value);
+   syncHairUI();ensureHairAnimation();
+ });
+ $('reset').addEventListener('click',()=>{
+   hairMotion.style='softBrown';hairMotion.enabled=true;hairMotion.strength=45;
+   syncHairUI();ensureHairAnimation();
+ });
+ function paintHair(){
+   if(hairMotion.style==='none'||!hairSprite.complete||!hairSprite.naturalWidth)return;
+   const p=values(),head=p[0],ctx=canvas.getContext('2d');
+   // Same head coordinate transform as eyes and mouth; follows head size and neck.
+   const hairAnchor={x:124.5,y:76};
+   const anchor=texturePoint(hairAnchor.x,hairAnchor.y,p);
+   ctx.save();
+   ctx.translate(anchor[0]*dpr,anchor[1]*dpr);
+   ctx.scale(head,head);
+   ctx.translate(-hairAnchor.x*dpr,-hairAnchor.y*dpr);
+   if(!hairMotion.enabled||hairMotion.strength<=0){
+     ctx.drawImage(hairSprite,0,0,SW*dpr,SH*dpr);
+   }else{
+     const t=performance.now(),power=hairMotion.strength/100;
+     hairFrameCtx.setTransform(1,0,0,1,0,0);
+     hairFrameCtx.clearRect(0,0,SW,170);
+     // The crown / roots stay exactly registered to the base.  The lower
+     // left and right locks sway separately using progressively displaced strips.
+     hairFrameCtx.drawImage(hairSprite,0,0,SW,70,0,0,SW,70);
+     for(let y=70;y<170;y+=2){
+       const h=Math.min(2,170-y);
+       const progress=Math.max(0,Math.min(1,(y-72)/89));
+       const bend=progress*progress*(3-2*progress);
+       const left=bend*power*(2.7*Math.sin(t*.0018-.65)+.75*Math.sin(t*.0031+.4));
+       const right=bend*power*(2.7*Math.sin(t*.0018+.65)+.75*Math.sin(t*.0030+1.2));
+       hairFrameCtx.drawImage(hairSprite,0,y,126,h,left,y,126,h);
+       hairFrameCtx.drawImage(hairSprite,126,y,126,h,126+right,y,126,h);
+     }
+     ctx.drawImage(hairFrameCanvas,0,0,SW*dpr,170*dpr);
+   }
+   ctx.restore();
+ }
+ syncHairUI();
+ ensureHairAnimation();
+
+ const originalRender=render;
+ render=function(){
+   queued=false; if(!ready) return; canvasSize();
+   if(fallback){ renderCPU(values()); applySkinTone(); drawOutfit(); drawExpandedPlane('front'); paintFaceFeatures(); paintEyes(); paintHair(); return; }
+   gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT); gl.useProgram(program); gl.uniform1fv(uniforms.p,new Float32Array(values())); gl.uniform4f(uniforms.frame,OX,OY,W,H); gl.drawArrays(gl.TRIANGLE_STRIP,0,gl.meshCount);
+   const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height); drawBackOutfit(); drawExpandedPlane('back'); ctx.drawImage(glSurface,0,0); applySkinTone(); drawOutfit(); drawExpandedPlane('front'); paintFaceFeatures(); paintEyes(); paintHair();
+ };
+ syncExpressionUI();
+ if(typeof queue==='function') queue();
+})();
+</script>
+
+
+<script>
+'use strict';
+(()=>{
+  const css=document.createElement('style');
+  css.textContent=`
+    .elastic-motion-group .state-note{line-height:1.55;margin-top:5px}
+    .elastic-motion-switch{display:flex;align-items:center;gap:7px;font-size:12px;margin-bottom:15px;line-height:1.4}
+    .elastic-motion-switch input{accent-color:#438fee}
+    @media(max-width:860px){
+      .elastic-motion-switch{font-size:9px;align-items:flex-start;margin-bottom:10px}
+      .elastic-motion-group .state-note{font-size:8px}
+    }
+  `;
+  document.head.appendChild(css);
+  const bodyPanel=document.getElementById('panel-body');
+  const oldGroup=bodyPanel?.querySelector('.micro-motion-group');
+  if(oldGroup) oldGroup.remove();
+  if(bodyPanel && !document.getElementById('idleMotionEnabled')){
+    const group=document.createElement('div');
+    group.className='group elastic-motion-group';
+    group.innerHTML=`
+      <h3>보잉 모션</h3>
+      <label class="elastic-motion-switch"><input type="checkbox" id="idleMotionEnabled" checked><span>살아 있는 듯한 탄성 모션</span></label>
+      <div class="control"><div class="readout"><label for="idleMotionStrength">평소 움직임</label><output id="idleMotionOutput">56%</output></div><input id="idleMotionStrength" type="range" min="0" max="100" value="56" step="1"></div>
+      <div class="control"><div class="readout"><label for="shapeBoingStrength">체형 변경 보잉</label><output id="shapeBoingOutput">76%</output></div><input id="shapeBoingStrength" type="range" min="0" max="100" value="76" step="1"></div>
+      <p class="state-note">포즈는 바뀌지 않는다. 몸이 숨 쉬듯 탄성 있게 움직이고, 슬라이더를 움직이면 선택한 부위가 한 번 늘었다 돌아오는 듯 반응한다.</p>
+    `;
+    bodyPanel.appendChild(group);
+  }
+  const motion={enabled:true,idle:56,shape:76,request:0,lastTs:0,lastDraw:0,
+    bounce:0,bounceV:0,lean:0,leanV:0};
+  const shapeKeys=SHAPE_ID.slice();
+  const readTargets=()=>shapeKeys.map(k=>Number(input[k].value)/100);
+  let targets=readTargets();
+  const animated=targets.slice();
+  const velocities=targets.map(()=>0);
+  const outCanvas=document.createElement('canvas');
+  const outCtx=outCanvas.getContext('2d');
+  const limit=(x,lo,hi)=>Math.max(lo,Math.min(hi,x));
+
+  // All deforming systems (base doll, outfits, face anchors, eyes, hair) use the
+  // same animated parameters. The visible sliders remain the target values.
+  values=function(){return motion.enabled ? animated : readTargets();};
+
+  function updateUI(){
+    const cb=document.getElementById('idleMotionEnabled');
+    const idle=document.getElementById('idleMotionStrength');
+    const sh=document.getElementById('shapeBoingStrength');
+    if(!cb||!idle||!sh) return;
+    cb.checked=motion.enabled;
+    idle.disabled=!motion.enabled;idle.value=String(motion.idle);
+    sh.disabled=!motion.enabled;sh.value=String(motion.shape);
+    document.getElementById('idleMotionOutput').textContent=motion.idle+'%';
+    document.getElementById('shapeBoingOutput').textContent=motion.shape+'%';
+    idle.style.setProperty('--fill',motion.idle+'%');
+    sh.style.setProperty('--fill',motion.shape+'%');
+  }
+
+  function kick(delta,index){
+    if(!motion.enabled)return;
+    const strength=motion.shape/100;
+    const kickSize=limit(Math.abs(delta)*3.3,.055,.32)*strength;
+    const ratioPart=index===6||index===9||index===10;
+    const headPart=index===0||index===1;
+    const sideways=index===2||index===5||index===7||index===8;
+    // Vertical bounce is stronger for leg/torso length, slight lateral spring for width.
+    motion.bounceV=limit(motion.bounceV+(ratioPart?1.25:headPart?.83:1)*kickSize,-.36,.36);
+    motion.leanV=limit(motion.leanV+(sideways?1:.26)*kickSize*(delta>=0?1:-1)*.27,-.11,.11);
+  }
+
+  function targetsFromInputs(kickOnChange=true){
+    const next=readTargets();
+    let changed=false;
+    for(let i=0;i<next.length;i++){
+      if(Math.abs(next[i]-targets[i])>0.0001){
+        if(kickOnChange)kick(next[i]-targets[i],i);
+        changed=true;
+      }
+      targets[i]=next[i];
+      if(!motion.enabled || motion.shape===0){animated[i]=targets[i];velocities[i]=0;}
+    }
+    if(changed){launch();queue();}
+  }
+
+  function launch(){
+    if(motion.request||!motion.enabled||document.hidden)return;
+    motion.lastTs=0;
+    motion.request=requestAnimationFrame(step);
+  }
+
+  function step(ts){
+    motion.request=0;
+    if(!motion.enabled||document.hidden){motion.lastTs=0;return;}
+    if(!motion.lastTs)motion.lastTs=ts;
+    const dt=limit((ts-motion.lastTs)/16.667,.65,1.5);
+    motion.lastTs=ts;
+    const k=.095+motion.shape*.00048;
+    const damping=.67+motion.shape*.001;
+    let moving=false;
+    for(let i=0;i<animated.length;i++){
+      if(motion.shape===0){animated[i]=targets[i];velocities[i]=0;continue;}
+      velocities[i]=(velocities[i]+(targets[i]-animated[i])*k*dt)*Math.pow(damping,dt);
+      animated[i]+=velocities[i]*dt;
+      // Small safe overshoot: keep the render well inside the source-mesh topology envelope.
+      const nearMin=Number(input[shapeKeys[i]].min)/100-.012;
+      const nearMax=Number(input[shapeKeys[i]].max)/100+.012;
+      animated[i]=limit(animated[i],nearMin,nearMax);
+      if(Math.abs(targets[i]-animated[i])>0.00012||Math.abs(velocities[i])>.00010)moving=true;
+      else{animated[i]=targets[i];velocities[i]=0;}
+    }
+    const dampingPow=Math.pow(.73,dt);
+    motion.bounceV=(motion.bounceV-motion.bounce*.17*dt)*dampingPow;
+    motion.bounce+=motion.bounceV*dt;
+    motion.leanV=(motion.leanV-motion.lean*.16*dt)*Math.pow(.71,dt);
+    motion.lean+=motion.leanV*dt;
+    if(Math.abs(motion.bounce)<.0002&&Math.abs(motion.bounceV)<.0002){motion.bounce=0;motion.bounceV=0;}
+    if(Math.abs(motion.lean)<.0002&&Math.abs(motion.leanV)<.0002){motion.lean=0;motion.leanV=0;}
+    const busy=moving||Math.abs(motion.bounce)>.0001||Math.abs(motion.lean)>.0001;
+    const interval=(typeof fallback!=='undefined'&&fallback)?48:33;
+    if(ts-motion.lastDraw>=interval){
+      motion.lastDraw=ts;
+      if(typeof queue==='function')queue();
+    }
+    if(busy||motion.idle>0){motion.request=requestAnimationFrame(step);}
+    else{motion.lastTs=0;if(typeof queue==='function')queue();}
+  }
+
+  function applyBoingToCanvas(){
+    if(!motion.enabled||!canvas.width||!canvas.height)return;
+    const power=motion.idle/100;
+    if(power===0&&motion.bounce===0&&motion.lean===0)return;
+    if(outCanvas.width!==canvas.width||outCanvas.height!==canvas.height){outCanvas.width=canvas.width;outCanvas.height=canvas.height;}
+    outCtx.setTransform(1,0,0,1,0,0);
+    outCtx.clearRect(0,0,canvas.width,canvas.height);
+    outCtx.drawImage(canvas,0,0);
+    const t=performance.now();
+    // An eased breathing pulse and a small phase offset make the motion springy,
+    // rather than rotating a rigid doll with a constant sine wave.
+    const breathe=(Math.sin(t*.0021-.9)*.0085 + Math.sin(t*.00425+.8)*.0021)*power;
+    const side=(Math.sin(t*.00135+.4)*1.3 + Math.sin(t*.00255+1.2)*.30)*power;
+    const rise=(Math.sin(t*.00215-1)*1.25 + Math.sin(t*.0043+1.1)*.4)*power;
+    const sx=1-.43*breathe-.025*motion.bounce;
+    const sy=1+breathe+.036*motion.bounce;
+    const turn=((Math.sin(t*.00125+.3)*.52+.1*Math.sin(t*.0028))*power)*Math.PI/180+motion.lean*.04;
+    // Anchor near the ankles: small breathing stretch is visible above, not in feet.
+    const pivotX=canvas.width*.5,pivotY=canvas.height*.89;
+    const ctx=canvas.getContext('2d');
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.save();
+    ctx.translate(pivotX+(side+motion.lean*9)*dpr,pivotY+(rise+motion.bounce*3.2)*dpr);
+    ctx.rotate(turn);
+    ctx.scale(sx,sy);
+    ctx.translate(-pivotX,-pivotY);
+    ctx.drawImage(outCanvas,0,0);
+    ctx.restore();
+  }
+
+  // Replace the previous weak idle wrapper while preserving the established
+  // drawing sequence: doll -> clothes -> expressions -> eyes -> moving hair.
+  const previousRender=render;
+  render=function(){previousRender();applyBoingToCanvas();};
+
+  shapeKeys.forEach(k=>input[k]?.addEventListener('input',()=>targetsFromInputs(true)));
+  document.getElementById('idleMotionEnabled')?.addEventListener('change',e=>{
+    motion.enabled=e.target.checked;
+    if(!motion.enabled){
+      if(motion.request)cancelAnimationFrame(motion.request);
+      motion.request=0;motion.lastTs=0;
+      motion.bounce=0;motion.bounceV=0;motion.lean=0;motion.leanV=0;
+      targets=readTargets();for(let i=0;i<targets.length;i++){animated[i]=targets[i];velocities[i]=0;}
+    }else{
+      targetsFromInputs(false);motion.bounceV=.045;launch();
+    }
+    updateUI();queue();
+  });
+  document.getElementById('idleMotionStrength')?.addEventListener('input',e=>{
+    motion.idle=Number(e.target.value);updateUI();launch();queue();
+  });
+  document.getElementById('shapeBoingStrength')?.addEventListener('input',e=>{
+    motion.shape=Number(e.target.value);
+    if(motion.shape===0){for(let i=0;i<targets.length;i++){animated[i]=targets[i];velocities[i]=0;}}
+    updateUI();launch();queue();
+  });
+  document.getElementById('resetBody')?.addEventListener('click',()=>targetsFromInputs(true));
+  document.getElementById('reset')?.addEventListener('click',()=>{
+    motion.enabled=true;motion.idle=56;motion.shape=76;
+    targets=readTargets();for(let i=0;i<targets.length;i++){animated[i]=targets[i];velocities[i]=0;}
+    motion.bounce=.06;motion.bounceV=.12;motion.lean=0;motion.leanV=0;
+    updateUI();launch();queue();
+  });
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden){if(motion.request)cancelAnimationFrame(motion.request);motion.request=0;motion.lastTs=0;}
+    else launch();
+  });
+  updateUI();launch();queue();
+  // Test-only inspectable state for diagnostics without changing the public UI.
+  window.__dressMotion={state:motion,animated,velocities,targets:()=>targets.slice()};
+})();
+</script>
+
+</body></html>

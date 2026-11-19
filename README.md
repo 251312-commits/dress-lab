@@ -1,1 +1,59 @@
-# dress-lab
+# DRESS LAB
+
+기존 옷입히기 게임을 유지하면서, 의상 이미지를 HTML과 분리해 관리하는 정적 웹앱이다. 별도의 로그인·DB·서버 저장 기능 없이 GitHub 폴더 업로드만으로 의상을 추가한다.
+
+## 실행
+
+- 게임: **index.html**
+- 의상 정보 생성기: **editor.html**
+- 배포 URL(설정 후): https://251312-commits.github.io/dress-lab/
+- 최초 한 번: GitHub 리포지토리 **Settings → Pages → Build and deployment → Source: GitHub Actions** 선택
+- main 브랜치에 새 의상 파일을 커밋하면 .github/workflows/pages.yml이 의상 목록을 만들고 Pages에 배포한다. Actions가 성공해야 게임에 반영된다.
+
+## 의상 추가: 코드 수정 불필요
+
+1. 투명 배경 PNG를 만든다. **모든 이미지에 인형과 같은 좌표 원점을 사용**한다.
+2. editor.html에서 의상 ID, 이름, 분류, 기본 색, 캔버스 규격을 선택한다.
+3. 앞/뒤 PNG 여러 개를 선택하고 각 이미지의 인형 앞/뒤, 순서(숫자가 클수록 나중에 합성)를 지정한다.
+4. **item.json 다운로드**를 누른다.
+5. GitHub에서 clothes/영문-ID/ 폴더에 원본 PNG와 item.json을 모두 올린다. 폴더명과 JSON의 id가 일치해야 한다.
+6. main에 반영하면 Actions가 자동으로 data/wardrobe.json을 생성해 배포하고 새 옷을 인식한다. 이미지와 설정은 GitHub 저장소에 남는다.
+
+예: clothes/rose-evening-dress/back.png, front.png, item.json. 설정 예시는 clothes/_example/item.example.json을 참고한다. 이름이 _로 시작하는 폴더는 예시용으로 무시한다.
+
+## 이미지 캔버스 규격
+
+| 규격 | PNG 크기 | 기본 인형 이미지에 대응하는 영역 | 사용처 |
+|---|---|---|---|
+| standard | **252 × 730 px** | x=0~252, y=0~730 | 기본 옷, 상의, 하의 |
+| expanded | **504 × 900 px** | x=126~378, y=0~730 | 풍성한 드레스, 넓은 치마, 아래로 긴 자락 |
+
+확장 규격에서 인형의 중심선은 **x=252**이다. 기존 252×730 이미지의 원점은 **확장 캔버스의 (126, 0)** 으로 이동한다. 즉, 기존 의상과 같은 위치에 그린 다음 양옆으로 126px씩, 아래로 170px을 더 쓸 수 있다. 이미지의 실제 그림 위치를 자동으로 맞춰 주지는 않는다.
+
+제작 가이드는 guides/standard-guide.svg, guides/expanded-guide.svg에 있다. **가이드 격자는 의상 PNG에 병합하지 않는다.**
+
+확장 의상 선택 시 미리보기/저장 화면의 캔버스 크기도 넓어진다. 기본 인형과 일반 의상은 기존 체형 변형 엔진을 사용한다. 확장 의상의 추가 면적은 기존 체형 변형을 바탕으로 가로 띠 단위로 변형한다. 극단적인 체형 설정에서는 가장자리의 세부 변형이 기존 좁은 의상과 완전히 동일하지 않을 수 있다.
+
+## 여러 레이어를 한 벌로 묶기
+
+한 벌의 parts에 여러 PNG를 지정할 수 있다. 인형 뒤에 보이는 자락은 plane: back, 몸 앞에 보이는 부분은 plane: front로 설정한다. order는 같은 면과 의상 분류 안에서 나중에 합성되는 순서를 결정한다. 해당 의상을 입거나 벗으면 **모든 PNG가 함께 처리**된다.
+
+의상 분류 group: upper, top, vest, outer, dress, skirt, lower, socks, shoes, neck, waistAccessory.
+
+## 주요 폴더
+
+| 위치 | 용도 |
+|---|---|
+| index.html | 원래 게임 + 외부 옷장 연결 |
+| assets/legacy/ | 기존 게임에서 추출한 PNG 51개. 기존 이미지와 동작을 보존하기 위해 수정하지 않는다 |
+| app/wardrobe-extension.js | 의상 목록 읽기, 한 벌-여러 PNG, 드레스 확장 렌더링 |
+| editor.html | PNG 규격 확인 및 item.json 다운로드 (서버 저장 없음) |
+| clothes/ID/ | 새 옷의 PNG + item.json |
+| tools/build-wardrobe.mjs | 의상 폴더 스캔 후 목록 자동 생성 |
+| data/wardrobe.json | 배포 시 빌드되는 의상 목록. 저장소 원본은 비어 있을 수 있다 |
+
+## 테스트 및 수동 목록 생성
+
+Node.js 22 환경에서 리포지토리 최상단을 기준으로 **node tools/build-wardrobe.mjs**를 실행하면 data/wardrobe.json을 직접 생성할 수 있다. 로컬에서 file://로 열면 브라우저 보안 정책으로 외부 이미지/JSON 읽기가 제한될 수 있으므로 정적 서버나 GitHub Pages에서 테스트한다.
+
+이 프로젝트는 별도 서버 없이 공개 Pages를 사용한다. **GitHub에 저장된 의상은 브라우저 캐시를 지워도 사라지지 않는다.** 단, 리포지토리를 삭제하면 데이터도 사라지므로 중요한 PNG는 별도 백업한다.

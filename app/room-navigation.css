@@ -22,7 +22,7 @@
 .room-world{position:absolute;inset:0;z-index:0;overflow:hidden;border-radius:23px;pointer-events:none;background:#f1e0d9}
 .room-track{
   position:absolute;inset:0;display:flex;width:400%;height:100%;
-  transform:translate3d(calc(var(--room-index,0) * -25%),0,0);
+  transform:translate3d(0,0,0);
   transition:transform 620ms cubic-bezier(.23,.78,.16,1);
   will-change:transform;
 }
@@ -130,6 +130,7 @@
   .room-dock button{min-height:55px;font-size:10px;gap:3px;border-radius:12px}
   .room-dock button svg{height:21px;width:21px}
   .footer{background:#fffbfd;border-top:1px solid #f0e7ec;min-height:33px;padding:3px}
+  body:not([data-room="wardrobe"]) .footer{display:none}
   .footer .done-button{background:linear-gradient(135deg,#b783b3,#8c6397);border-color:#ad82a9;box-shadow:none;max-width:225px}
   .workspace>.sidebar{
     position:fixed;left:10px;right:10px;bottom:calc(76px + env(safe-area-inset-bottom));

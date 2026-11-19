@@ -103,6 +103,9 @@ input[type=range]::-moz-range-thumb{border:2px solid white;box-shadow:0 1px 4px 
  .hair-motion-toggle{font-size:9px;align-items:flex-start}
  .hair-tip{font-size:9px}
 }
+
+.canvas-bed.wide-outfit .art{max-width:100%;width:auto;height:100%;max-height:100%;object-fit:contain}
+@media(max-width:860px){.canvas-bed.wide-outfit .art{max-width:100%;width:100%;height:auto;max-height:100%;object-fit:contain}}
 </style></head><body>
 <div class="app-shell">
 <header class="topbar"><div class="brand"><span class="brand-icon">✦</span><span>DRESS LAB</span></div><div class="top-right"><span class="status-pill">룩 편집 중</span><span>MY WARDROBE</span></div></header>
@@ -222,6 +225,7 @@ input[type=range]::-moz-range-thumb{border:2px solid white;box-shadow:0 1px 4px 
 <footer class="footer"><button id="save" type="button" class="done-button"><span class="hanger">♧</span>코디 완성 · PNG 저장</button><span class="footer-tip">데님 팬츠 교체 · 블랙 탑 4종 추가</span></footer>
 </div>
 
+<script src="app/wardrobe-extension.js"></script>
 <script>
 
 'use strict';
@@ -522,7 +526,7 @@ $('blinkSpeed').addEventListener('input',()=>{updateBlinkSpeedLabel();scheduleBl
 $('blinkNow').addEventListener('click',blinkOnce);
 updateBlinkSpeedLabel();scheduleBlink();
 const canvas=$('view');
-const W=400,H=825,OX=74,OY=30,SW=252,SH=730;
+let W=400,H=825,OX=74,OY=30;const SW=252,SH=730;
 eyeOverlayBuffer=document.createElement('canvas');eyeOverlayBuffer.width=SW;eyeOverlayBuffer.height=SH;
 eyeOverlayCtx=eyeOverlayBuffer.getContext('2d');
 scleraToneBuffer=document.createElement('canvas');scleraToneBuffer.width=SW;scleraToneBuffer.height=SH;
@@ -573,14 +577,15 @@ function colorEase(a,b,x){const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t
 function tintGarment(image,hex,type){
  const originalHex=originalGarmentColors[type]||'#808080';
  if(hex.toLowerCase()===originalHex.toLowerCase())return image;
- const off=document.createElement('canvas');off.width=SW;off.height=SH;
+ const iw=image.naturalWidth||SW,ih=image.naturalHeight||SH;
+ const off=document.createElement('canvas');off.width=iw;off.height=ih;
  const ctx=off.getContext('2d',{willReadFrequently:true});
- ctx.drawImage(image,0,0,SW,SH);
+ ctx.drawImage(image,0,0,iw,ih);
  const {r:tr,g:tg,b:tb}=garmentRgb(hex);
  const samples={whiteShirt:235,shirt:172,pants:134,blackTubeTop:48,blackHalterTop:43,blackTankTop:43,blackCamiTop:48,ivoryBodice:203,ivorySleeves:202,
   brownVest:67,plaidSkirt:77,brownSocks:63,brownLoafers:65,neckRibbon:75,blackTurtleneck:45,blackSlacks:49,silverNecklace:215,silverWaistChain:215};
  const reference=samples[type]||100;
- const img=ctx.getImageData(0,0,SW,SH),d=img.data;
+ const img=ctx.getImageData(0,0,iw,ih),d=img.data;
  const newPart=!(type==='whiteShirt'||type==='shirt'||type==='pants');
  for(let i=0;i<d.length;i+=4){
   if(d[i+3]===0)continue;
@@ -612,7 +617,7 @@ function composeOutfitSource(){
   if(chosen==='none')continue;
   const sources=imageGroup[chosen]||[chosen];
   for(const key of sources){
-   const image=outfitImages[key];if(!image)continue;
+   const image=outfitImages[key];if(!image||isExpandedPart(key))continue;
    const tinted=tintGarment(image,garmentColors[chosen],chosen);
    const target=behindBodyKeys.has(key)?backOutfitCtx:outfitCtx;
    target.drawImage(tinted,0,0,SW,SH);
@@ -623,6 +628,7 @@ function composeOutfitSource(){
 }
 function shaders(){
 const vs=`precision highp float;
+uniform vec4 u_frame;
 attribute vec2 a_source;varying vec2 v_uv;uniform float p[11];
 const float PI=3.14159265;
 float S(float a,float b,float x){float t=clamp((x-a)/(b-a),0.,1.);return t*t*(3.-2.*t);}
@@ -689,7 +695,7 @@ void main(){
  // Arm length is anchored at the shoulder joint; upper/lower-body ratio does not stretch the arm pixels.
  float armY=172.+(y-172.)*p[8];
  float finalY=M(outY,armY,armWeight);
- vec2 pos=vec2((finalX+74.)/400.*2.-1.,1.-(finalY+30.)/825.*2.);
+ vec2 pos=vec2((finalX+u_frame.x)/u_frame.z*2.-1.,1.-(finalY+u_frame.y)/u_frame.w*2.);
  gl_Position=vec4(pos,0.,1.);v_uv=vec2(x/252.,1.-y/730.);
 }`;
 const fs=`precision mediump float;varying vec2 v_uv;uniform sampler2D u_tex;
@@ -702,7 +708,7 @@ function initGL(){
  if(!gl)throw Error('WebGL을 지원하지 않는 브라우저');
  const {vs,fs}=shaders();program=gl.createProgram();gl.attachShader(program,makeShader(gl.VERTEX_SHADER,vs));gl.attachShader(program,makeShader(gl.FRAGMENT_SHADER,fs));gl.linkProgram(program);
  if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(program));gl.useProgram(program);
- const pos=gl.getAttribLocation(program,'a_source');uniforms={p:gl.getUniformLocation(program,'p[0]')};
+ const pos=gl.getAttribLocation(program,'a_source');uniforms={p:gl.getUniformLocation(program,'p[0]'),frame:gl.getUniformLocation(program,'u_frame')};
  // Fine segmented lattice follows all anatomy with continuous vertices: no disconnected seams.
  const xs=Array.from({length:Math.ceil(SW/4)+1},(_,i)=>Math.min(SW,i*4));
  const ys=Array.from({length:Math.ceil(SH/4)+1},(_,i)=>Math.min(SH,i*4));
@@ -793,7 +799,7 @@ function rasterTriangle(out,p0,p1,p2,s0,s1,s2,srcImageData=sourcePixels){
 function renderCPU(p){
  const ctx=canvas.getContext('2d');ctx.clearRect(0,0,W,H);
  const unchanged=p.every(n=>Math.abs(n-1)<.00001);
- drawBackOutfit();
+ drawBackOutfit();drawExpandedPlane('back');
  if(unchanged){ctx.drawImage(source,OX,OY);return;}
  const im=ctx.createImageData(W,H),step=7,nx=Math.ceil(SW/step),ny=Math.ceil(SH/step);
  const coords=[],dst=[];
@@ -810,7 +816,7 @@ function renderCPU(p){
  baseCanvas.getContext('2d').putImageData(im,0,0);
  ctx.drawImage(baseCanvas,0,0);
 }
-function render(){queued=false;if(!ready)return;canvasSize();if(fallback){renderCPU(values());applySkinTone();drawOutfit();paintEyes();return;}gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.useProgram(program);gl.uniform1fv(uniforms.p,new Float32Array(values()));gl.drawArrays(gl.TRIANGLE_STRIP,0,gl.meshCount);const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);drawBackOutfit();ctx.drawImage(glSurface,0,0);applySkinTone();drawOutfit();paintEyes()}
+function render(){queued=false;if(!ready)return;canvasSize();if(fallback){renderCPU(values());applySkinTone();drawOutfit();paintEyes();return;}gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.useProgram(program);gl.uniform1fv(uniforms.p,new Float32Array(values()));gl.uniform4f(uniforms.frame,OX,OY,W,H);gl.drawArrays(gl.TRIANGLE_STRIP,0,gl.meshCount);const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);drawBackOutfit();ctx.drawImage(glSurface,0,0);applySkinTone();drawOutfit();paintEyes()}
 
 function hexToRgb(hex){const m=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);return m?{r:parseInt(m[1],16),g:parseInt(m[2],16),b:parseInt(m[3],16)}:null}
 function applySkinTone(){
@@ -969,6 +975,8 @@ function buildWardrobeUI(){
 
 
 
+ if(window.__dressLabWardrobeControlsBound)return;
+ window.__dressLabWardrobeControlsBound=true;
  $('removeAllOutfit').addEventListener('click',()=>{for(const id in selectedLayers)selectedLayers[id]='none';syncWardrobeUI();composeOutfitSource();queue()});
  $('quickColorTarget').addEventListener('change',e=>{activeColorPart=e.target.value;refreshQuickColor()});
  for(const [id,field] of [['quickHue','h'],['quickSat','s'],['quickVal','v']]){
@@ -985,6 +993,7 @@ function filterWardrobe(filter){
  $('rightScroll').scrollTop=0;
 }
 function syncWardrobeUI(){
+ updateWardrobeViewport();
  document.querySelectorAll('.garment-card').forEach(btn=>{
   const yes=selectedLayers[btn.dataset.layer]===btn.dataset.item;
   btn.classList.toggle('selected',yes);btn.setAttribute('aria-pressed',String(yes));
@@ -1025,17 +1034,19 @@ function renderWardrobeThumbnails(){
  for(const g of wardrobeLayers){for(const [id] of g.items){
   if(id==='none'||thumbCache[id])continue;
   const keys=imageGroup[id]||[id];
-  const off=document.createElement('canvas');off.width=SW;off.height=SH;
+  const fmt=DRESS_LAB_CANVAS_FORMATS[DRESS_LAB_EXTERNAL_ITEMS.get(id)?.canvas||'standard'];
+   const iw=fmt.width,ih=fmt.height;
+   const off=document.createElement('canvas');off.width=iw;off.height=ih;
   const ctx=off.getContext('2d',{willReadFrequently:true});
-  keys.forEach(key=>{if(outfitImages[key])ctx.drawImage(outfitImages[key],0,0,SW,SH)});
-  const pixels=ctx.getImageData(0,0,SW,SH).data;
-  let x0=SW,y0=SH,x1=0,y1=0;
-  for(let y=0;y<SH;y+=2)for(let x=0;x<SW;x+=2){if(pixels[(y*SW+x)*4+3]>45){x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y)}}
+  keys.forEach(key=>{if(outfitImages[key])ctx.drawImage(outfitImages[key],0,0,iw,ih)});
+  const pixels=ctx.getImageData(0,0,iw,ih).data;
+  let x0=iw,y0=ih,x1=0,y1=0;
+  for(let y=0;y<ih;y+=2)for(let x=0;x<iw;x+=2){if(pixels[(y*iw+x)*4+3]>45){x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y)}}
   if(x0>x1||y0>y1)continue;
   const w=x1-x0+2,h=y1-y0+2,margin=4;
   const icon=document.createElement('canvas');icon.width=100;icon.height=100;
   const c=icon.getContext('2d');const scale=Math.min(92/w,92/h);
-  c.drawImage(off,Math.max(0,x0-margin),Math.max(0,y0-margin),Math.min(SW,w+margin*2),Math.min(SH,h+margin*2),
+  c.drawImage(off,Math.max(0,x0-margin),Math.max(0,y0-margin),Math.min(iw,w+margin*2),Math.min(ih,h+margin*2),
    (100-(w+margin*2)*scale)/2,(100-(h+margin*2)*scale)/2,(w+margin*2)*scale,(h+margin*2)*scale);
   thumbCache[id]=icon.toDataURL('image/png');
  }}
@@ -1065,7 +1076,7 @@ $('reset').addEventListener('click',()=>{
  skinSelected=false;skinColor=skinColorDefault;hsv=rgbToHsv(252,227,207);showToneState();blinkFrame=0;gazeState.targetX=0;gazeState.currentX=0;gazeState.velocityX=0;gazeState.targetY=0;gazeState.currentY=0;gazeState.velocityY=0;gazeState.highlightX=0;gazeState.highlightVelocityX=0;gazeState.highlightY=0;gazeState.highlightVelocityY=0;gazeState.highlightFollowY=0;gazeState.highlightFollowVelocityY=0;gazeState.boing=0;gazeState.active=false;gazeState.irisHistory.length=0;setIrisColor('original');queue();
 });
 $('save').addEventListener('click',()=>{if(!ready)return;render();const save=document.createElement('canvas');save.width=canvas.width;save.height=canvas.height;const c=save.getContext('2d');c.clearRect(0,0,save.width,save.height);c.drawImage(canvas,0,0);save.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='체형_비율_편집.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)},'image/png')});
-Promise.all([paintSource(),loadOutfitSources()]).then(()=>{
+Promise.all([paintSource(),loadOutfitSources(),loadExternalWardrobe()]).then(()=>{
  try{initGL()}catch(err){console.warn('Canvas 2D로 렌더링:',err);gl=null;fallback=true;sourcePixels=imgctx.getImageData(0,0,SW,SH);}
  ready=true;renderWardrobeThumbnails();queue();
 }).catch(err=>{console.error(err);const ctx=canvas.getContext('2d');if(ctx){ctx.fillStyle='#6b7280';ctx.font='13px sans-serif';ctx.fillText('이미지를 표시할 수 없다: '+err.message,20,32)}});
@@ -1370,9 +1381,9 @@ filterWardrobe('all');
  const originalRender=render;
  render=function(){
    queued=false; if(!ready) return; canvasSize();
-   if(fallback){ renderCPU(values()); applySkinTone(); drawOutfit(); paintFaceFeatures(); paintEyes(); paintHair(); return; }
-   gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT); gl.useProgram(program); gl.uniform1fv(uniforms.p,new Float32Array(values())); gl.drawArrays(gl.TRIANGLE_STRIP,0,gl.meshCount);
-   const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height); drawBackOutfit(); ctx.drawImage(glSurface,0,0); applySkinTone(); drawOutfit(); paintFaceFeatures(); paintEyes(); paintHair();
+   if(fallback){ renderCPU(values()); applySkinTone(); drawOutfit(); drawExpandedPlane('front'); paintFaceFeatures(); paintEyes(); paintHair(); return; }
+   gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT); gl.useProgram(program); gl.uniform1fv(uniforms.p,new Float32Array(values())); gl.uniform4f(uniforms.frame,OX,OY,W,H); gl.drawArrays(gl.TRIANGLE_STRIP,0,gl.meshCount);
+   const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height); drawBackOutfit(); drawExpandedPlane('back'); ctx.drawImage(glSurface,0,0); applySkinTone(); drawOutfit(); drawExpandedPlane('front'); paintFaceFeatures(); paintEyes(); paintHair();
  };
  syncExpressionUI();
  if(typeof queue==='function') queue();

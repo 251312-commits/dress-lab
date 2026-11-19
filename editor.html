@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>DRESS LAB — 의상 정보 생성기</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR",sans-serif;color:#27364d;background:#f0f4fb}*{box-sizing:border-box}
+body{margin:0;padding:18px}main{max-width:960px;margin:auto}h1{font-size:26px;margin:8px 0}h2{font-size:16px}
+p{color:#69778c;line-height:1.65}.card{background:white;border:1px solid #e1e9f5;border-radius:18px;padding:18px;margin:15px 0;box-shadow:0 8px 24px #213f6810}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+label{font-weight:700;font-size:13px;display:block;margin:6px 0}input,select{width:100%;padding:11px;border:1px solid #cdd9ea;border-radius:10px;font:inherit;background:#fff;color:#344562}
+button,.btn{border:0;background:#387fe7;color:white;border-radius:11px;padding:12px 20px;font:700 14px inherit;cursor:pointer;display:inline-block;text-decoration:none}
+button:disabled{opacity:.5;cursor:not-allowed}.small{font-size:12px;color:#6d7e91}.notice{background:#e9f3ff;padding:12px;border-radius:10px;color:#40658f}
+.grid{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:9px;border-bottom:1px solid #e6eaf1}th{color:#6c7890}
+.file{display:flex;align-items:center;gap:8px;min-width:130px}.file img{height:60px;width:55px;object-fit:contain;background:#f5f7fb;border-radius:7px}
+.error{color:#ad3333}.okay{color:#237c55}.inline{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+code{background:#eff3fa;padding:2px 5px;border-radius:4px}
+@media(max-width:650px){.fields{grid-template-columns:1fr}.card{padding:12px}.grid{font-size:11px}td,th{padding:5px}body{padding:8px}}
+</style></head><body><main>
+<div class="inline"><a href="index.html">← 게임으로</a><span class="small">의상 파일 자체를 서버에 업로드하지 않는 오프라인 정보 생성기</span></div>
+<h1>의상 정보 생성기</h1>
+<p>의상 파일을 고르고 이름·카테고리·캔버스 규격·앞뒤 순서를 지정하면 <code>item.json</code>을 내려받는다. PNG와 JSON을 같은 GitHub 의상 폴더에 올리면 배포 시 자동 등록된다.</p>
+<section class="card"><h2>① 의상 정보</h2><div class="fields">
+<div><label for="itemId">영문 고유 ID (폴더명과 동일)</label><input id="itemId" placeholder="rose-evening-dress" pattern="[a-z][a-z0-9-]*" required /></div>
+<div><label for="itemName">게임에서 보일 이름</label><input id="itemName" placeholder="장미 이브닝 드레스" required /></div>
+<div><label for="group">의상 분류</label><select id="group">
+<option value="dress">드레스</option><option value="upper">이너 상의</option><option value="top">탑</option><option value="vest">조끼</option><option value="outer">아우터</option><option value="skirt">스커트</option><option value="lower">바지</option><option value="socks">양말</option><option value="shoes">신발</option><option value="neck">목 장식</option><option value="waistAccessory">허리 장식</option>
+</select></div>
+<div><label for="color">기본 의상색</label><input id="color" type="color" value="#808080"/></div>
+<div><label for="canvasMode">이미지 캔버스 규격</label><select id="canvasMode"><option value="standard">기본 · 252 × 730</option><option value="expanded">확장 · 504 × 900 (풍성한 드레스·긴 자락)</option></select></div>
+<div><label>PNG 제작 가이드</label><div class="inline"><a class="btn" id="guideLink" href="guides/standard-guide.svg" target="_blank" rel="noopener">격자 보기·다운로드</a><span class="small" id="modeHelp">인형과 동일한 252 × 730 원점</span></div></div>
+</div></section>
+<section class="card"><h2>② 앞/뒤 레이어 PNG 선택</h2>
+<input id="images" type="file" accept=".png,image/png" multiple/>
+<p class="small">여러 장 선택 가능. 각 이미지의 투명한 캔버스 크기는 선택한 규격과 정확히 같아야 한다. 선택한 파일은 서버에 전송하지 않는다.</p>
+<div style="overflow-x:auto"><table class="grid"><thead><tr><th>미리보기 / 파일</th><th>크기</th><th>인형 앞·뒤</th><th>순서</th></tr></thead><tbody id="layers"></tbody></table></div>
+<p id="fileStatus" class="small">PNG 파일을 선택하면 레이어가 나타난다.</p></section>
+<section class="card"><h2>③ 설정 파일 다운로드</h2>
+<div class="notice">먼저 GitHub에 <code>clothes/고유ID/</code> 폴더를 만들고, 선택한 PNG와 내려받은 <code>item.json</code>을 함께 넣는다. 저장소를 수정하지 않고 이 페이지에서 파일만 생성한다.</div>
+<p id="status" role="status"></p><button id="export" type="button">item.json 다운로드</button>
+</section>
+</main><script>
+'use strict';
+const specs={standard:{w:252,h:730},expanded:{w:504,h:900}};
+const $=id=>document.getElementById(id);
+const layerRows=[];
+$('canvasMode').addEventListener('change',()=>{
+ const wide=$('canvasMode').value==='expanded';
+ $('guideLink').href='guides/'+(wide?'expanded':'standard')+'-guide.svg';
+ $('modeHelp').textContent=wide?'인형 중심은 (252, 0) 기준, 기본 격자는 x=126~378, y=0~730':'인형과 동일한 252 × 730 원점';
+ updateStatus();
+});
+function updateStatus(){
+ const spec=specs[$('canvasMode').value];
+ const failed=layerRows.filter(x=>x.w!==spec.w || x.h!==spec.h);
+ const el=$('fileStatus');
+ el.textContent=layerRows.length+'개 선택 · '+spec.w+' × '+spec.h+' 규격 '+(failed.length?failed.length+'개 불일치':'모두 일치');
+ el.className=failed.length?'error':'okay';
+}
+$('images').addEventListener('change',async()=>{
+ const parent=$('layers');parent.innerHTML='';layerRows.splice(0);
+ for(const [i,file] of Array.from($('images').files||[]).entries()){
+   const objectUrl=URL.createObjectURL(file);
+   const img=new Image();img.src=objectUrl;
+   await new Promise(resolve=>{img.onload=resolve;img.onerror=resolve});
+   const w=img.naturalWidth,h=img.naturalHeight;
+   const row=document.createElement('tr');
+   const cell=document.createElement('td');
+   const block=document.createElement('div');block.className='file';
+   const thumbnail=document.createElement('img');thumbnail.src=objectUrl;thumbnail.alt='';
+   const title=document.createElement('span');title.textContent=file.name;
+   block.append(thumbnail,title);cell.append(block);row.append(cell);
+   const dim=document.createElement('td');dim.textContent=w+' × '+h;row.append(dim);
+   const planeCell=document.createElement('td');
+   const plane=document.createElement('select');plane.innerHTML='<option value="front">인형 앞</option><option value="back">인형 뒤</option>';
+   if(/back|rear|뒤|후면/i.test(file.name))plane.value='back';
+   planeCell.append(plane);row.append(planeCell);
+   const orderCell=document.createElement('td');
+   const order=document.createElement('input');order.type='number';order.step='1';order.value=String((i+1)*10);order.style.minWidth='75px';
+   orderCell.append(order);row.append(orderCell);
+   parent.append(row);
+   layerRows.push({file,w,h,plane,order,objectUrl});
+ }
+ updateStatus();
+});
+$('export').addEventListener('click',()=>{
+ const id=$('itemId').value.trim(),name=$('itemName').value.trim();
+ const spec=specs[$('canvasMode').value];
+ const report=$('status');report.className='error';
+ if(!/^[a-z][a-z0-9-]{0,63}$/.test(id)){report.textContent='ID는 영문 소문자로 시작하고 영문·숫자·하이픈만 사용할 수 있다.';return;}
+ if(!name){report.textContent='의상 이름을 입력해야 한다.';return;}
+ if(!layerRows.length){report.textContent='PNG 파일을 하나 이상 선택해야 한다.';return;}
+ if(layerRows.some(x=>x.w!==spec.w||x.h!==spec.h)){report.textContent='선택한 이미지 캔버스 크기가 일치하지 않는다.';return;}
+ if(new Set(layerRows.map(x=>x.file.name)).size!==layerRows.length){report.textContent='같은 파일 이름이 중복되어 있다.';return;}
+ const data={id,name,group:$('group').value,canvas:$('canvasMode').value,color:$('color').value,
+   parts:layerRows.map(row=>({file:row.file.name,plane:row.plane.value,order:Number(row.order.value)||0}))};
+ const blob=new Blob([JSON.stringify(data,null,2)+'\n'],{type:'application/json'});
+ const url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download='item.json';a.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+ report.className='okay';report.textContent='생성 완료. '+id+' 폴더에 PNG와 item.json을 함께 업로드한다.';
+});
+</script></body></html>

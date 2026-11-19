@@ -1,0 +1,19 @@
+{
+  "id": "rose-evening-dress",
+  "name": "장미 이브닝 드레스",
+  "group": "dress",
+  "canvas": "expanded",
+  "color": "#833A59",
+  "parts": [
+    {
+      "file": "back.png",
+      "plane": "back",
+      "order": 10
+    },
+    {
+      "file": "front.png",
+      "plane": "front",
+      "order": 20
+    }
+  ]
+}

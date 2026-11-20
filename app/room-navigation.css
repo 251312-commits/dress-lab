@@ -85,7 +85,7 @@
 .center-stage>.stage-caption{display:none}
 .canvas-bed .art{position:relative;z-index:2}
 .canvas-bed:after{z-index:1}
-@media(max-width:860px){
+@media (max-width:860px), (max-width:1024px) and (pointer:coarse){
   html,body{background:#f9f2f4}
   .app-shell{height:100dvh;min-height:0;padding:0;gap:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto auto}
   .topbar{min-height:38px;padding:6px 13px;border-bottom:1px solid #e9d8e2;background:#fffbfc;z-index:3}
@@ -160,7 +160,7 @@
   body[data-room="mirror"] .left-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}
   body[data-room="mirror"] .left-tabs #tab-hair{display:none}
 }
-@media(max-width:860px) and (max-height:520px){
+@media (max-width:860px) and (max-height:520px), (max-width:1024px) and (pointer:coarse) and (max-height:520px){
   .topbar{min-height:29px;padding:3px 11px}
   .room-dock{min-height:56px;padding-top:2px;padding-bottom:max(2px,env(safe-area-inset-bottom))}
   .room-dock button{min-height:47px;font-size:9px}
@@ -174,4 +174,119 @@
 }
 @media(prefers-reduced-motion:reduce){
   .room-track,.room-dock button,.workspace>.sidebar{transition:none!important}
+}
+
+/* Persistent right-side editor:
+   Reuse the original vertical controls, without duplicating their state or handlers.
+   Reception is a full-width scene; care keeps its optional hair drawer.
+   Mirror and wardrobe always show the existing editor on the right. */
+
+/* Desktop / non-touch wide screens: one right editor, never two sidebars. */
+@media (min-width:1025px), (min-width:861px) and (pointer:fine){
+  body[data-room] .workspace{
+    grid-template-columns:minmax(0,1fr) minmax(260px,355px);
+  }
+  body[data-room] .workspace>.center-stage{grid-column:1;grid-row:1}
+  body[data-room] .workspace>.left-sidebar,
+  body[data-room] .workspace>.right-sidebar{grid-column:2;grid-row:1}
+  body[data-room="reception"] .workspace>.sidebar{display:none}
+  body[data-room="reception"] .workspace>.center-stage{grid-column:1 / -1}
+  body[data-room="care"] .workspace>.right-sidebar,
+  body[data-room="mirror"] .workspace>.right-sidebar,
+  body[data-room="wardrobe"] .workspace>.left-sidebar{display:none}
+  body[data-room="care"] .left-tabs{grid-template-columns:1fr}
+  body[data-room="care"] .left-tabs #tab-body,
+  body[data-room="care"] .left-tabs #tab-skin,
+  body[data-room="care"] .left-tabs #tab-face{display:none}
+  body[data-room="mirror"] .left-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}
+  body[data-room="mirror"] .left-tabs #tab-hair{display:none}
+}
+
+/* Portrait phones and touch-screen landscape: slim right column + left-offset doll. */
+@media (max-width:860px), (max-width:1024px) and (pointer:coarse){
+  body{--room-editor-width:clamp(158px,42vw,340px)}
+  .workspace>.sidebar{
+    position:absolute;top:0;bottom:0;left:auto;right:0;
+    width:var(--room-editor-width);height:auto;min-height:0;
+    padding:8px 7px 9px;gap:5px;
+    border-radius:16px 0 0 16px;
+    background:#fffbfd;box-shadow:-6px 0 19px #58415a22;
+    transform:translateX(12px);z-index:12;
+  }
+  /* The two legacy editors are positioned at the same right-hand location.
+     The room chooses which one is visible. */
+  body[data-room="mirror"] .workspace>.left-sidebar,
+  body[data-room="wardrobe"] .workspace>.right-sidebar{
+    visibility:visible;opacity:1;pointer-events:auto;
+    transform:translateX(0);
+  }
+  .workspace>.sidebar>.segmented{margin-right:0}
+  .workspace>.sidebar>.scroll-card{min-height:0;flex:1}
+  .workspace>.sidebar .room-panel-close{display:none}
+  body[data-room="mirror"] .room-tools-toggle,
+  body[data-room="wardrobe"] .room-tools-toggle{display:none}
+  /* Reserve the right column in the doll's flex layout while leaving the
+     sliding background full-width behind the editor. */
+  body[data-room="mirror"] .center-stage>.canvas-bed,
+  body[data-room="wardrobe"] .center-stage>.canvas-bed{
+    padding-right:var(--room-editor-width);
+  }
+  body[data-room="mirror"] .canvas-bed .art,
+  body[data-room="mirror"] .canvas-bed.wide-outfit .art,
+  body[data-room="wardrobe"] .canvas-bed .art,
+  body[data-room="wardrobe"] .canvas-bed.wide-outfit .art{
+    width:auto!important;height:auto!important;
+    max-width:calc(100% - 14px)!important;
+    max-height:91%!important;object-fit:contain!important;
+  }
+  body[data-room="mirror"] .room-location,
+  body[data-room="wardrobe"] .room-location{
+    left:8px;top:8px;padding:6px 8px;
+    max-width:calc(100% - var(--room-editor-width) - 88px);
+  }
+  body[data-room="mirror"] .room-location strong,
+  body[data-room="wardrobe"] .room-location strong{font-size:12px}
+  body[data-room="mirror"] .room-location span,
+  body[data-room="wardrobe"] .room-location span{display:none}
+  body[data-room="mirror"] .room-note,
+  body[data-room="wardrobe"] .room-note{
+    left:calc((100% - var(--room-editor-width)) / 2);
+    max-width:calc(100% - var(--room-editor-width) - 16px);
+    font-size:9px;
+  }
+  body[data-room="mirror"] .center-stage .stage-controls,
+  body[data-room="wardrobe"] .center-stage .stage-controls{
+    right:calc(var(--room-editor-width) + 7px);left:auto;top:8px;
+    width:70px;max-width:70px;grid-template-columns:1fr 1fr;gap:3px;
+  }
+  body[data-room="mirror"] .center-stage .stage-controls button,
+  body[data-room="wardrobe"] .center-stage .stage-controls button{
+    font-size:0;min-height:31px;padding:3px 0;border-radius:9px;
+  }
+  body[data-room="mirror"] .center-stage .stage-controls button span,
+  body[data-room="wardrobe"] .center-stage .stage-controls button span{
+    font-size:16px;line-height:1.2;
+  }
+  /* Care keeps its old optional bottom drawer instead of a permanent column. */
+  body[data-room="care"] .workspace>.left-sidebar{
+    position:fixed;top:auto;left:10px;right:10px;
+    bottom:calc(76px + env(safe-area-inset-bottom));
+    width:auto;height:min(52dvh,420px);
+    border-radius:18px;box-shadow:0 16px 42px #5031484a;
+    transform:translateY(13px);z-index:24;
+    padding:9px 10px 10px;
+  }
+  body.room-tools-open[data-room="care"] .workspace>.left-sidebar{
+    transform:translateY(0);
+  }
+  body[data-room="care"] .workspace>.left-sidebar>.segmented{margin-right:25px}
+  body[data-room="care"] .workspace>.left-sidebar .room-panel-close{display:grid}
+}
+@media (max-width:860px) and (max-height:520px), (max-width:1024px) and (pointer:coarse) and (max-height:520px){
+  body[data-room="care"] .workspace>.left-sidebar{
+    bottom:calc(60px + env(safe-area-inset-bottom));
+    height:min(63dvh,330px);
+  }
+  body[data-room="mirror"] .room-note,
+  body[data-room="wardrobe"] .room-note{bottom:10px}
 }

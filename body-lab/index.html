@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ko">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#f4f2f0"><title>DRESS LAB — 파츠 기반 체형 실험실</title><link rel="stylesheet" href="./style.css"></head>
+<body><main class="shell">
+<header class="top"><div class="brand">DRESS LAB <span style="font-size:10px;font-weight:500;color:#9a9794">/ BODY LAB</span></div><span class="tag">기존 게임과 분리된 실험 버전</span></header>
+<section class="viewer" aria-label="캐릭터 체형 미리보기"><div class="viewer-head"><div><h1>NEW BODY SYSTEM</h1><p>픽셀 늘리기 없이, 독립 파츠의 윤곽을 다시 그리는 방식</p></div><a href="../index.html">기존 게임</a></div>
+<div class="stage" id="stage">
+<svg id="doll" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 252 730" aria-label="파츠 기반 인형 미리보기" role="img">
+<defs><linearGradient id="skin" x1=".1" y1=".04" x2=".98" y2=".8"><stop offset="0" stop-color="#ffeadc"/><stop offset=".38" stop-color="#f7d7c6"/><stop offset=".74" stop-color="#edbdac"/><stop offset="1" stop-color="#d99f94"/></linearGradient></defs>
+<g id="pieces"></g><g id="anchors" style="display:none"></g>
+</svg></div><div class="footnote">새 파츠 원점: 252 × 730 · 기존 의상 엔진과 아직 연결하지 않음</div></section>
+<aside class="panel"><div class="panel-head"><h2>체형 조절 실험</h2><p>각 파츠의 윤곽과 연결점을 직접 계산한다. 기존 이미지를 가로로 늘리거나 픽셀을 왜곡하지 않는다.</p></div>
+<div class="tools"><h3 class="section-title">체형 프리셋</h3><div class="presets">
+<button type="button" data-preset="default" class="active">기본</button>
+<button type="button" data-preset="slim">슬림</button>
+<button type="button" data-preset="curvy">볼륨</button>
+<button type="button" data-preset="long">롱레그</button></div>
+<div id="controls"></div>
+<div class="switches"><label><input type="checkbox" id="show-anchors">관절 기준점 표시</label><label><input type="checkbox" id="checker">투명 배경 확인</label></div>
+<div class="action"><button type="button" id="reset">전체 초기화</button><button type="button" id="save-json">체형 JSON 저장</button><button type="button" id="save-svg">투명 SVG 저장</button><button type="button" class="main" id="save-png">투명 PNG 저장</button></div>
+<h3 class="section-title">분리된 투명 이미지 파일 (16개)</h3><div class="assets" id="assets"></div>
+<p class="note">각 파일은 동일한 252×730 좌표계를 쓰는 투명 SVG이다. 캐릭터는 그와 동일한 파츠 곡선 데이터로 실시간 재구성된다. 새 의상 시스템은 아직 연결하지 않은 독립 실험판이다.</p></div></aside>
+</main><script src="./geometry.js"></script><script src="./app.js"></script></body></html>

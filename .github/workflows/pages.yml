@@ -30,6 +30,14 @@ jobs:
           node --check tools/build-wardrobe.mjs
       - name: Build garment index from uploaded folders
         run: node tools/build-wardrobe.mjs
+      - name: Include standalone Body Lab from experiment branch
+        run: |
+          git fetch --no-tags --depth=1 origin experiment/part-based-body-v2
+          git checkout FETCH_HEAD -- body-lab
+          test -f body-lab/index.html
+          test -f body-lab/assets/parts/head.svg
+          node --check body-lab/app.js
+          node --check body-lab/geometry.js
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload static site

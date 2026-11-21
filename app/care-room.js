@@ -1,6 +1,6 @@
-/* DRESS LAB care-room interface scaffold.
-   No care effects, beauty changes, or persistent gameplay data are applied.
-   The step/completion buttons are UI previews only. */
+/* DRESS LAB: care room interface prototype.
+   Icon category dock and illustrated tool shelf. Tool taps only mark preview state;
+   no existing doll, hairstyle, makeup, wardrobe, or save data is modified. */
 (() => {
   'use strict';
 
@@ -9,87 +9,76 @@
 
   const categories = ['facial', 'hair', 'relax'];
   const definitions = {
-    facial: {
-      name: '페이셜', english: 'FACIAL CARE', catalog: '메이크업',
-      initial: {
-        title: '첫 방문 · 피부 상태 개선',
-        description: '처음에는 피부를 관리하는 과정을 진행한다.',
-        steps: ['상태 확인', '케어 도구 사용', '피부 관리 마무리']
-      },
-      repeat: {
-        title: '재방문 · 메이크업 변경 준비',
-        description: '현재 메이크업을 유지하다가, 케어를 시작하면 제거하는 흐름이다.',
-        steps: ['현재 메이크업 확인', '메이크업 제거', '다음 스타일 준비']
-      }
-    },
-    hair: {
-      name: '헤어', english: 'HAIR CARE', catalog: '헤어',
-      initial: {
-        title: '첫 방문 · 모발 상태 개선',
-        description: '처음에는 엉킴과 모발 상태를 관리하는 과정을 진행한다.',
-        steps: ['상태 확인', '헤어 케어 도구 사용', '모발 관리 마무리']
-      },
-      repeat: {
-        title: '재방문 · 헤어스타일 변경 준비',
-        description: '기존 헤어스타일을 유지하다가, 케어를 시작하면 정리하는 흐름이다.',
-        steps: ['현재 스타일 확인', '기존 세팅 정리', '다음 스타일 준비']
-      }
-    },
-    relax: {
-      name: '릴랙세이션', english: 'RELAXATION', catalog: null,
-      initial: {
-        title: '첫 방문 · 컨디션 관리',
-        description: '처음 방문했을 때의 휴식과 관리 과정을 위한 자리다.',
-        steps: ['컨디션 확인', '릴랙세이션 케어', '휴식 마무리']
-      },
-      repeat: {
-        title: '재방문 · 자유로운 휴식',
-        description: '외형 변경 없이도 언제든 다시 이용할 수 있는 관리다.',
-        steps: ['케어 선택', '릴랙세이션 케어', '휴식 마무리']
-      }
-    }
+    facial: {name: '페이셜', icon: 'face', catalog: '메이크업',
+      initial: [['pump', '클렌저'], ['sponge', '클렌징 스펀지'], ['jar', '페이스 팩']],
+      repeat: [['remover', '메이크업 리무버'], ['cotton', '코튼 패드'], ['serum', '기초 케어']]},
+    hair: {name: '헤어', icon: 'hair', catalog: '헤어',
+      initial: [['comb', '빗'], ['pump', '샴푸'], ['dryer', '드라이어']],
+      repeat: [['spray', '스타일링 정리'], ['pump', '샴푸'], ['brush', '스타일링 브러시']]},
+    relax: {name: '릴랙세이션', icon: 'leaf', catalog: null,
+      initial: [['towel', '따뜻한 타월'], ['oil', '마사지 오일'], ['stones', '온열 스톤']],
+      repeat: [['candle', '아로마'], ['oil', '마사지 오일'], ['towel', '타월']]}
   };
 
-  // Prototype-only in-memory flags. Never mutate the existing doll/canvas.
+  // Lightweight inline SVG props stand in for future illustrated tool assets.
+  const paths = {
+    face: '<circle cx="12" cy="12" r="8.5"/><path d="M9 10h.1M15 10h.1M8.5 15c2 1.8 5 1.8 7 0"/>',
+    hair: '<path d="M5 14c-1-7 2-10 7-10s8 3 7 10M5 13c.2 4 1 6 4 8M19 13c-.2 4-1 6-4 8M5 12c4.2-.6 6-2.5 9-6 .8 3 2.5 5 5 6"/>',
+    leaf: '<path d="M20 4C10 4 4 7.5 4 15a5 5 0 0 0 5 5c7.5 0 11-6 11-16ZM4 20c3.5-6 7.5-9.5 13-12"/>',
+    pump: '<path d="M9 5V3h6v2M8 5h9M13 3h5v2M8 9h8M7 9h10v11H7zM10 13h4M12 12v5"/>',
+    sponge: '<path d="M4.5 13c0-4.5 3.4-7 7.5-7s7.5 2.5 7.5 7-3 6-7.5 6-7.5-1.5-7.5-6Z"/><circle cx="9" cy="12" r=".7"/><circle cx="14.5" cy="14" r=".7"/><circle cx="12.7" cy="9.5" r=".7"/>',
+    jar: '<path d="M5 8h14v12H5zM4 5.5h16V8H4zM9 13h6M10 16h4"/>',
+    remover: '<path d="M10 4h4M11 4V2h2v2M9 7V5h6v2M7 10c0-1.6 1-3 2.5-3h5C16 7 17 8.4 17 10v10H7zM10 15l2-3 2 3c0 1.5-4 1.5-4 0Z"/>',
+    cotton: '<circle cx="10" cy="12" r="6.5"/><circle cx="15.5" cy="14" r="5.3"/><path d="M8 10c1-1 2-1 3-.3"/>',
+    serum: '<path d="M10 4h4M11 4V2h2v2M10 5h4v3l-1 2M9 10h6l2 10H7zM12 12c2 3 2 4 0 5-2-1-2-2 0-5Z"/>',
+    comb: '<path d="M3 7h18v4H3zM5 11v8M8 11v8M11 11v8M14 11v8M17 11v8M20 11v8"/>',
+    dryer: '<path d="M4 9h11a4 4 0 0 1 0 8H9l-2 4H5l2-6M4 9v6h4M15 10l4-2v10l-4-2M4 12h4"/>',
+    spray: '<path d="M9 8h6M10 5h4v3M10 4h7l2 2M8 9h8l1 11H7zM20 7h2M20 10h2"/>',
+    brush: '<path d="M5 9c0-3 2-5 5-5s5 2 5 5-2 5-5 5-5-2-5-5ZM10 14l7 7M6 6l7 6M7 4l8 8"/>',
+    towel: '<rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 10h16M8 13h8M8 16h5"/>',
+    oil: '<path d="M10 4V2h4v2M8 6h8v3H8zM7 9h10v11H7zM12 12c2.5 3 2.5 4.5 0 5.5-2.5-1-2.5-2.5 0-5.5Z"/>',
+    stones: '<ellipse cx="12" cy="18" rx="9" ry="3"/><ellipse cx="12" cy="13" rx="7" ry="3"/><ellipse cx="12" cy="8" rx="5" ry="3"/>',
+    candle: '<path d="M6 10h12v11H6zM6 14h12M12 10C9 7 12 6 12 3c3 3 3 5 0 7Z"/>',
+    book: '<path d="M12 6c-3-2-6-2-10-1v14c4-1 7-1 10 1M12 6c3-2 6-2 10-1v14c-4-1-7-1-10 1M12 6v14"/>',
+    close: '<path d="M5 5l14 14M19 5 5 19"/>'
+  };
+  const icon = (name, className = '') =>
+    '<svg class="' + className + '" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+      (paths[name] || paths.leaf) + '</svg>';
+
+  // Phase progression is private, per-category, and only used to preview the two
+  // different tool assortments. A tool must be selected once for the demo to count it.
+  const emptyUsed = () => ({facial: [], hair: [], relax: []});
   const state = {
     category: 'facial',
     hasVisited: false,
     repeatUnlocked: {facial: false, hair: false, relax: false},
-    initialProgress: {facial: 0, hair: 0, relax: 0},
-    repeatProgress: {facial: 0, hair: 0, relax: 0}
+    initialUsed: emptyUsed(),
+    repeatUsed: emptyUsed()
   };
 
   const root = document.createElement('section');
   root.className = 'care-room-ui';
-  root.setAttribute('aria-label', '케어룸 UI 시안');
+  root.setAttribute('aria-label', '케어룸 인터페이스 시안');
   root.innerHTML = [
     '<div class="care-header">',
-    '  <div class="care-header-line"><span>CARE ROOM</span><span>INTERFACE PREVIEW</span></div>',
     '  <div class="care-category-tabs" role="tablist" aria-label="케어 카테고리">',
     categories.map(key =>
-      '    <button type="button" role="tab" id="care-tab-' + key +
-      '" aria-controls="care-panel" data-category="' + key +
-      '" aria-selected="false">' + definitions[key].name + '</button>'
+      '<button type="button" role="tab" id="care-tab-' + key +
+      '" aria-controls="care-shelf" data-category="' + key + '" aria-selected="false">' +
+        icon(definitions[key].icon, 'care-tab-symbol') +
+        '<span>' + definitions[key].name + '</span></button>'
     ).join(''),
     '  </div>',
     '</div>',
-    '<div class="care-panel" id="care-panel" role="tabpanel" tabindex="0">',
-    '  <div class="care-panel-top"><span class="care-phase" data-care-phase></span>',
-    '    <button type="button" class="care-reset" data-care-reset title="시연 상태만 초기화">시연 초기화</button></div>',
-    '  <span class="care-english" data-care-english></span>',
-    '  <h2 data-care-title></h2>',
-    '  <p class="care-description" data-care-description></p>',
-    '  <ol class="care-steps" data-care-steps aria-label="케어 과정 미리보기"></ol>',
-    '  <div class="care-tool-title">TOOL SLOTS <span>이미지 미등록</span></div>',
-    '  <div class="care-tool-slots" aria-label="케어 도구 이미지 자리">',
-    '    <span><i>+</i>도구 01</span><span><i>+</i>도구 02</span><span><i>+</i>도구 03</span>',
-    '  </div>',
-    '  <div class="care-panel-actions">',
-    '    <button type="button" class="care-step-button" data-care-next>단계 시연</button>',
-    '    <button type="button" class="care-catalog-button" data-care-catalog hidden>카탈로그 보기</button>',
-    '  </div>',
-    '  <p class="care-hint" data-care-hint aria-live="polite"></p>',
-    '  <p class="care-disclaimer">UI 시안 · 실제 케어 및 외모 변경 기능은 아직 없음</p>',
+    '<div class="care-shelf" id="care-shelf" role="tabpanel" aria-labelledby="care-tab-facial">',
+    '  <div class="care-shelf-shadow" aria-hidden="true"></div>',
+    '  <div class="care-shelf-board" aria-hidden="true"></div>',
+    '  <div class="care-tools" data-care-tools role="group" aria-label="케어 도구 시연"></div>',
+    '  <button type="button" class="care-catalog-trigger" data-care-catalog hidden aria-label="스타일 카탈로그 열기" title="스타일 카탈로그 열기">' +
+       icon('book') + '</button>',
+    '  <div class="care-shelf-front" aria-hidden="true"></div>',
+    '  <span class="care-visually-hidden" data-care-status aria-live="polite"></span>',
     '</div>'
   ].join('');
   stage.append(root);
@@ -98,86 +87,74 @@
   dialog.className = 'care-catalog-dialog';
   dialog.setAttribute('aria-label', '스타일 카탈로그 미리보기');
   dialog.innerHTML = [
-    '<div class="care-catalog-head"><div><small>BEAUTY LOOKBOOK · PREVIEW</small>',
+    '<div class="care-catalog-head"><div><small>BEAUTY LOOKBOOK</small>',
     '<h2 data-catalog-title>카탈로그</h2></div>',
-    '<button type="button" aria-label="카탈로그 닫기" data-catalog-close>×</button></div>',
-    '<p>선택 카드와 썸네일이 들어갈 자리다. 현재 캐릭터의 메이크업과 헤어스타일은 변경되지 않는다.</p>',
-    '<div class="care-catalog-grid">',
-    '<div><span>IMAGE 01</span><strong>STYLE 01</strong><small>이미지 준비 중</small></div>',
-    '<div><span>IMAGE 02</span><strong>STYLE 02</strong><small>이미지 준비 중</small></div>',
+    '<button type="button" aria-label="카탈로그 닫기" data-catalog-close>' + icon('close') + '</button></div>',
+    '<div class="care-catalog-grid" aria-label="카탈로그 이미지 자리">',
+    '<div class="care-catalog-page" aria-label="첫 번째 스타일 이미지 미등록"></div>',
+    '<div class="care-catalog-page" aria-label="두 번째 스타일 이미지 미등록"></div>',
     '</div>'
   ].join('');
   document.body.append(dialog);
 
-  const tabButtons = [...root.querySelectorAll('[data-category]')];
-  const phaseLabel = root.querySelector('[data-care-phase]');
-  const title = root.querySelector('[data-care-title]');
-  const description = root.querySelector('[data-care-description]');
-  const stepsList = root.querySelector('[data-care-steps]');
-  const next = root.querySelector('[data-care-next]');
+  const tabs = [...root.querySelectorAll('[data-category]')];
+  const tools = root.querySelector('[data-care-tools]');
+  const shelf = root.querySelector('#care-shelf');
   const catalog = root.querySelector('[data-care-catalog]');
-  const hint = root.querySelector('[data-care-hint]');
-  const panel = root.querySelector('#care-panel');
+  const status = root.querySelector('[data-care-status]');
 
   const getPhase = category => state.repeatUnlocked[category] ? 'repeat' : 'initial';
-  const getProgress = (category, phase) =>
-    phase === 'initial' ? state.initialProgress[category] : state.repeatProgress[category];
-  const getTotal = (category, phase) => definitions[category][phase].steps.length;
+  const getUsed = (category, phase) =>
+    phase === 'initial' ? state.initialUsed[category] : state.repeatUsed[category];
 
   function render() {
     const category = state.category;
-    const definition = definitions[category];
     const phase = getPhase(category);
-    const plan = definition[phase];
-    const progress = getProgress(category, phase);
-    const finished = progress >= plan.steps.length;
+    const definition = definitions[category];
+    const selected = getUsed(category, phase);
+    const assortment = definition[phase];
 
-    tabButtons.forEach(button => {
+    tabs.forEach(button => {
       const active = button.dataset.category === category;
       button.setAttribute('aria-selected', String(active));
       button.tabIndex = active ? 0 : -1;
     });
-    panel.setAttribute('aria-labelledby', 'care-tab-' + category);
     root.dataset.carePhase = phase;
-    phaseLabel.textContent = phase === 'initial' ? '01 · 상태 개선' : '02 · 재방문 케어';
-    root.querySelector('[data-care-english]').textContent = definition.english;
-    title.textContent = plan.title;
-    description.textContent = plan.description;
-    stepsList.innerHTML = plan.steps.map((step, i) =>
-      '<li class="' + (i < progress ? 'is-done' : i === progress ? 'is-current' : '') +
-      '"><span>' + String(i + 1).padStart(2, '0') + '</span>' + step + '</li>'
-    ).join('');
+    shelf.setAttribute('aria-labelledby', 'care-tab-' + category);
+    shelf.setAttribute('aria-label',
+      definition.name + ' · ' + (phase === 'initial' ? '첫 방문 상태 개선' : '재방문 케어'));
 
-    next.disabled = finished;
-    next.textContent = finished ? '시연 완료' : '다음 단계 시연 · ' + (progress + 1) + '/' + plan.steps.length;
-    catalog.hidden = !definition.catalog || !finished;
-    if (definition.catalog) catalog.textContent = definition.catalog + ' 카탈로그 미리보기';
-
-    hint.textContent = finished
-      ? phase === 'initial'
-        ? '첫 케어 시연 완료. 다른 방에 다녀오면 이 카테고리는 재방문 케어로 전환된다.'
-        : '재방문 케어 시연 완료. 외형은 그대로 유지된다.'
-      : phase === 'initial'
-        ? '최초 1회 상태 개선 흐름을 시연하는 중이다.'
-        : '외형은 유지된다. 아래 버튼은 실제 제거·스타일링을 실행하지 않는다.';
+    tools.innerHTML = assortment.map(([kind, label], index) => {
+      const used = selected.includes(index);
+      return '<button type="button" class="care-tool' + (used ? ' is-used' : '') +
+        '" data-care-tool="' + index + '" data-kind="' + kind +
+        '" aria-pressed="' + String(used) + '" aria-label="' + label + ' · ' +
+        (used ? '시연 선택됨' : '시연용 도구') + '">' +
+        '<span class="care-tool-art">' + icon(kind) + '</span>' +
+        '<span class="care-tool-base" aria-hidden="true"></span></button>';
+    }).join('');
+    catalog.hidden = !definition.catalog || selected.length !== assortment.length;
+    if (!catalog.hidden) catalog.setAttribute('aria-label', definition.catalog + ' 카탈로그 열기');
+    status.textContent = definition.name +
+      (phase === 'initial' ? ' 첫 방문 관리' : ' 재방문 관리') +
+      ' · 도구 ' + selected.length + '개 선택됨. ' +
+      (selected.length === assortment.length ? '시연 완료.' : '실제 관리 기능은 아직 없다.');
   }
 
-  function advancePreview() {
+  function selectTool(index) {
     const category = state.category;
     const phase = getPhase(category);
-    const progress = phase === 'initial' ? state.initialProgress : state.repeatProgress;
-    const total = getTotal(category, phase);
-    if (progress[category] < total) progress[category] += 1;
+    const selected = getUsed(category, phase);
+    if (!Number.isInteger(index) || index < 0 || index >= definitions[category][phase].length) return;
+    if (!selected.includes(index)) selected.push(index);
     render();
   }
 
   function resetPreview() {
     state.hasVisited = false;
-    for (const category of categories) {
-      state.repeatUnlocked[category] = false;
-      state.initialProgress[category] = 0;
-      state.repeatProgress[category] = 0;
-    }
+    state.repeatUnlocked = {facial: false, hair: false, relax: false};
+    state.initialUsed = emptyUsed();
+    state.repeatUsed = emptyUsed();
     render();
   }
 
@@ -190,13 +167,15 @@
 
   function showCatalog() {
     const category = state.category;
-    if (!definitions[category].catalog || getProgress(category, getPhase(category)) < getTotal(category, getPhase(category))) return;
-    dialog.querySelector('[data-catalog-title]').textContent = definitions[category].catalog + ' 카탈로그';
+    const phase = getPhase(category);
+    const definition = definitions[category];
+    if (!definition.catalog || getUsed(category, phase).length !== definition[phase].length) return;
+    dialog.querySelector('[data-catalog-title]').textContent = definition.catalog + ' 카탈로그';
     if (!dialog.open) dialog.showModal();
   }
 
-  // Existing navigation owns the current room; observe its data-room attribute.
-  // No event handlers or state in the wardrobe/hair renderers are replaced.
+  // The existing four-room navigation remains responsible for changing rooms.
+  // Only the invisible prototype state is updated on a return to the care room.
   let previousRoom = document.body.dataset.room || '';
   function syncRoom() {
     const room = document.body.dataset.room || '';
@@ -204,9 +183,9 @@
     if (room === 'care') {
       if (state.hasVisited) {
         for (const category of categories) {
-          if (state.initialProgress[category] >= getTotal(category, 'initial')) {
+          if (state.initialUsed[category].length === definitions[category].initial.length) {
             state.repeatUnlocked[category] = true;
-            state.repeatProgress[category] = 0;
+            state.repeatUsed[category] = [];
           }
         }
       }
@@ -221,8 +200,8 @@
   root.addEventListener('click', event => {
     const tab = event.target.closest('[data-category]');
     if (tab) { selectCategory(tab.dataset.category); return; }
-    if (event.target.closest('[data-care-next]')) advancePreview();
-    if (event.target.closest('[data-care-reset]')) resetPreview();
+    const tool = event.target.closest('[data-care-tool]');
+    if (tool) { selectTool(Number(tool.dataset.careTool)); return; }
     if (event.target.closest('[data-care-catalog]')) showCatalog();
   });
   root.querySelector('[role="tablist"]').addEventListener('keydown', event => {
@@ -236,19 +215,18 @@
   dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
 
   new MutationObserver(syncRoom).observe(document.body, {attributes: true, attributeFilter: ['data-room']});
-  if (previousRoom === 'care') {
-    state.hasVisited = true;
-  }
+  if (previousRoom === 'care') state.hasVisited = true;
   render();
 
-  // Diagnostic API only. Flags are preview state and are not gameplay/save data.
   window.__dressCarePrototype = {
     get snapshot() {
+      const counts = (phase) => Object.fromEntries(categories.map(category =>
+        [category, getUsed(category, phase).length]));
       return {
         category: state.category,
         phase: getPhase(state.category),
-        initialProgress: {...state.initialProgress},
-        repeatProgress: {...state.repeatProgress},
+        initialProgress: counts('initial'),
+        repeatProgress: counts('repeat'),
         repeatUnlocked: {...state.repeatUnlocked}
       };
     },
